@@ -1,0 +1,42 @@
+/* Importamos la fuente Poppins de Google */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+/* Aplicamos la fuente a toda la pagina */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f7f6 !important; /* Un gris muy sutil y elegante */
+}
+
+/* Barra de navegacion con un degradado moderno */
+.navbar {
+    background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%) !important;
+}
+
+/* Animacion y estilo para las tarjetas de los autos */
+.card {
+    border-radius: 15px !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efecto de "flotar" al pasar el mouse */
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important;
+}
+
+/* Botones más redondeados y suaves */
+.btn {
+    border-radius: 8px !important;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn:active {
+    transform: scale(0.95); /* Pequeña animacion al hacer clic */
+}
+
+/* Bordes redondeados para los modales (ventanas emergentes) */
+.modal-content {
+    border-radius: 15px;
+    overflow: hidden;
+}

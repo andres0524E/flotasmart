@@ -1,0 +1,13 @@
+{
+  "name": "flota_app",
+  "version": "1.0.0",
+  "description": "sistema de gestion de flota para el caso bd-aplicadas",
+  "main": "servidor.js",
+  "scripts": {
+    "start": "node servidor.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mysql2": "^3.6.5"
+  }
+}
