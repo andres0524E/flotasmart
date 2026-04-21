@@ -1,25 +1,40 @@
 const express = require('express');
+const path = require('path'); // <- Esta librería es vital para servidores en la nube
 const app = express();
-const puerto = 3000;
+
+// En Hostinger, el puerto lo asigna el servidor dinámicamente, por eso usamos process.env.PORT
+const puerto = process.env.PORT || 3000;
 
 // Importamos todas las rutas
 const rutas_vehiculos = require('./src/rutas/vehiculos');
 const rutas_usos = require('./src/rutas/usos');
 const rutas_eventos = require('./src/rutas/eventos');
 const rutas_historial = require('./src/rutas/historial');
-const rutas_login = require('./src/rutas/login');
+// Si tienes un archivo de login.js en rutas, descomenta la siguiente línea:
+// const rutas_login = require('./src/rutas/login');
 
-// Configuración
-app.use(express.static('public'));
+// 1. Configuración de la carpeta pública con ruta ABSOLUTA
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
-// Asignamos las rutas (¡Aquí es donde ocurría el 404 si faltaba alguna!)
+// 2. Asignamos las rutas de la API
 app.use('/api/vehiculos', rutas_vehiculos);
 app.use('/api/usos', rutas_usos);
 app.use('/api/eventos', rutas_eventos);
 app.use('/api/historial', rutas_historial);
-app.use('/api/login', rutas_login);
+// app.use('/api/login', rutas_login);
 
+// 3. LA SOLUCIÓN AL ERROR 403: Le decimos a Hostinger qué archivo abrir por defecto
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// (Opcional) Hacemos lo mismo para el login si existe
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+// 4. Iniciar el servidor
 app.listen(puerto, () => {
-    console.log(`✅ Servidor corriendo con éxito en http://localhost:${puerto}`);
+    console.log(`✅ Servidor corriendo con éxito en el puerto ${puerto}`);
 });
