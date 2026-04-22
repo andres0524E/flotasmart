@@ -1,37 +1,43 @@
-document.getElementById('formulario-login').addEventListener('submit', async (e) => {
-    e.preventDefault(); // Evitamos que la página se recargue
+document.addEventListener('DOMContentLoaded', () => {
+    // Buscamos el formulario por su ID exacto
+    const formulario = document.getElementById('formulario-login');
     
-    const correo = document.getElementById('login-correo').value;
-    const contrasena = document.getElementById('login-contrasena').value;
-    const div_error = document.getElementById('mensaje-error');
-
-    // Ocultamos el mensaje de error por si estaba visible de un intento anterior
-    div_error.classList.add('d-none');
-
-    try {
-        // Le tocamos la puerta a nuestro "cadenero" en el backend
-// Asegúrate de que el fetch apunte a Render y no al servidor local
-        const res = await fetch('https://flotasmart-backend.onrender.com/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ correo, password })
-        });
-
-        const datos = await respuesta.json();
-
-        if (respuesta.ok) {
-            // ¡Éxito! Guardamos los datos del usuario en la memoria del navegador
-            localStorage.setItem('usuarioFlota', JSON.stringify(datos.usuario));
+    if(formulario) {
+        formulario.addEventListener('submit', async (e) => {
+            e.preventDefault(); 
             
-            // Lo redirigimos automáticamente a nuestro panel principal
-            window.location.href = '/index.html';
-        } else {
-            // Si el backend dice que las credenciales están mal, mostramos el error
-            div_error.textContent = datos.error;
-            div_error.classList.remove('d-none');
-        }
-    } catch (error) {
-        div_error.textContent = 'Error al conectar con el servidor. Intenta de nuevo.';
-        div_error.classList.remove('d-none');
+            // Buscamos las cajitas por su ID exacto
+            const correo = document.getElementById('correo').value;
+            const password = document.getElementById('password').value;
+            const divError = document.getElementById('mensaje-error');
+            
+            // Ocultamos el error si estaba visible
+            divError.classList.add('d-none');
+
+            try {
+                // Petición a Render
+                const res = await fetch('https://flotasmart-backend.onrender.com/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo: correo, contrasena: password })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    // Guardamos la sesión y mandamos al panel
+                    localStorage.setItem('usuarioFlota', JSON.stringify(data.usuario));
+                    window.location.href = 'index.html'; 
+                } else {
+                    // Mostramos el error en la pantalla
+                    divError.textContent = '❌ ' + (data.error || 'Credenciales incorrectas');
+                    divError.classList.remove('d-none');
+                }
+            } catch (error) {
+                console.error("Error detectado:", error);
+                divError.textContent = '❌ Servidor desconectado. Revisa la consola.';
+                divError.classList.remove('d-none');
+            }
+        });
     }
 });
