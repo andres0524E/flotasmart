@@ -6,8 +6,7 @@
     <title>FlotaSmart | Gestión Inteligente</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/estilos.css">
-    <script src="js/principal.js?v=1001"></script>
-</head>
+    </head>
 <body>
     
     <nav class="navbar navbar-expand-lg navbar-dark mb-4 shadow-sm">
@@ -15,7 +14,7 @@
             <a class="navbar-brand fw-bold" href="#">✨ FlotaSmart</a>
             <div class="text-white text-end">
                 <div class="fw-bold fs-5 text-capitalize" id="nav-usuario-rol">Cargando...</div>
-                <button class="btn btn-sm btn-outline-light mt-1 py-0 px-2 border-0" id="btn-cerrar-sesion">Cerrar Sesión</button>
+                <button class="btn btn-sm btn-outline-light mt-1 py-0 px-2 border-0" id="btn-cerrar-sesion" onclick="cerrarSesion()">Cerrar Sesión</button>
             </div>
         </div>
     </nav>
@@ -26,15 +25,15 @@
                 <h2 class="text-dark fw-bold">Panel de Control</h2>
                 <p class="text-muted">Gestión estratégica y seguimiento de unidades.</p>
             </div>
-            <button class="btn btn-primary shadow-sm px-4 fw-bold" id="btn-nuevo-vehiculo">+ Registrar Unidad</button>
+            <button class="btn btn-primary shadow-sm px-4 fw-bold" id="btn-nuevo-vehiculo" data-bs-toggle="modal" data-bs-target="#modal-vehiculo">+ Registrar Unidad</button>
         </div>
 
-        <div class="row mb-5 d-none" id="seccion-dashboard">
+        <div class="row mb-5" id="seccion-dashboard">
             <div class="col-md-6 mb-3">
                 <div class="card shadow-sm border-0 p-3 h-100" style="border-radius: 20px;">
                     <div class="card-body text-center">
                         <h5 class="fw-bold text-secondary mb-3">📊 Salud de la Flota</h5>
-                        <canvas id="graficoFlota" style="max-height: 220px;"></canvas>
+                        <canvas id="graficaFlota" style="max-height: 220px;"></canvas>
                     </div>
                 </div>
             </div>
@@ -42,9 +41,9 @@
                 <div class="card shadow-sm border-0 p-3 h-100" style="border-radius: 20px;">
                     <div class="card-body">
                         <h5 class="fw-bold text-danger mb-4 text-center">⚠️ Top 3 Unidades con más Fallas</h5>
-                        <ul class="list-group list-group-flush" id="lista-ranking">
-                            <li class="list-group-item text-center text-muted border-0">Calculando ranking...</li>
-                        </ul>
+                        <div id="contenedor-ranking">
+                            <p class="text-center text-muted">Calculando ranking...</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -73,114 +72,16 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modal-uso" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title fw-bold">Solicitar / Autorizar Salida</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <form id="formulario-uso">
-                        <input type="hidden" id="uso-id-vehiculo">
-                        <div class="mb-3"><label class="form-label text-muted fw-bold">ID Operador</label><input type="number" class="form-control bg-light" id="uso-id-usuario" readonly></div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted fw-bold">Propósito</label>
-                            <select class="form-select" id="uso-proposito" required>
-                                <option value="Logística">Logística</option>
-                                <option value="Transporte Interno">Transporte Interno</option>
-                                <option value="Servicios Operativos">Servicios Operativos</option>
-                            </select>
-                        </div>
-                        <div class="mb-3"><label class="form-label text-muted fw-bold">Kilometraje al Salir</label><input type="number" class="form-control" id="uso-kilometraje" placeholder="Ej. 10000" required></div>
-                        <button type="submit" class="btn btn-success w-100 mt-2 fw-bold">Confirmar Salida</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modal-retorno" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header bg-info text-white">
-                    <h5 class="modal-title fw-bold">📍 Registrar Retorno</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <form id="formulario-retorno">
-                        <input type="hidden" id="retorno-id-vehiculo">
-                        <div class="mb-3"><label class="form-label text-muted fw-bold">Kilometraje al Regresar</label><input type="number" class="form-control" id="retorno-kilometraje" placeholder="Debe ser mayor al de salida..." required></div>
-                        <button type="submit" class="btn btn-info w-100 mt-2 fw-bold text-white">Confirmar Llegada</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modal-evento" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title fw-bold">Reportar Incidencia</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <form id="formulario-evento">
-                        <input type="hidden" id="evento-id-vehiculo">
-                        <div class="mb-3">
-                            <label class="form-label text-muted fw-bold">Tipo de reporte</label>
-                            <select class="form-select" id="evento-tipo" required>
-                                <option value="Falla Técnica">Falla Técnica</option>
-                                <option value="Mantenimiento Preventivo">Mantenimiento Preventivo</option>
-                                <option value="Accidente">Accidente Vial</option>
-                            </select>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label text-muted fw-bold">Factor / Causa Raíz</label>
-                            <select class="form-select" id="evento-causa" required>
-                                <option value="Desgaste Natural">Desgaste Natural (Uso normal)</option>
-                                <option value="Negligencia del Operador">Negligencia del Operador</option>
-                                <option value="Condiciones de Ruta/Clima">Condiciones de Ruta/Clima</option>
-                                <option value="Falla de Fábrica">Falla de Fábrica / Defecto</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3"><label class="form-label text-muted fw-bold">Descripción detallada</label><textarea class="form-control" id="evento-descripcion" rows="3" required></textarea></div>
-                        <div class="mb-3"><label class="form-label text-muted fw-bold">Costo estimado ($)</label><input type="number" class="form-control" id="evento-costo" step="0.01" value="0"></div>
-                        <button type="submit" class="btn btn-danger w-100 mt-2 fw-bold">Enviar a Taller</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modal-historial" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header bg-dark text-white">
-                    <h5 class="modal-title fw-bold">📖 Historial del Vehículo</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="table-light">
-                                <tr><th>Fecha</th><th>Actividad</th><th>Detalles Operativos</th></tr>
-                            </thead>
-                            <tbody id="tabla-historial"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <script src="js/principal.js?v=987654321"></script>
+    <script src="js/principal.js?v=999999"></script>
+
+    <script>
+        function cerrarSesion() {
+            localStorage.removeItem('usuarioFlota');
+            window.location.href = 'login.html';
+        }
+    </script>
 </body>
 </html>
