@@ -10,10 +10,11 @@ document.getElementById('formulario-login').addEventListener('submit', async (e)
 
     try {
         // Le tocamos la puerta a nuestro "cadenero" en el backend
-        const respuesta = await fetch('/api/login', {
+// Asegúrate de que el fetch apunte a Render y no al servidor local
+        const res = await fetch('https://flotasmart-backend.onrender.com/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ correo, contrasena })
+            body: JSON.stringify({ correo, password })
         });
 
         const datos = await respuesta.json();
