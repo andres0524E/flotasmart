@@ -1,5 +1,5 @@
 // ==========================================
-// 1. FUNCIONES DE CONEXIÓN A LA BASE DE DATOS
+// 1. FUNCIONES DE CONEXIÓN AL BACKEND (RENDER)
 // ==========================================
 
 async function cargarVehiculos() {
@@ -36,33 +36,47 @@ async function liberarVehiculo(id_vehiculo) {
     }
 }
 
-async function reportarIncidencia(id_vehiculo) {
-    if (confirm("¿Confirmas enviar este vehículo a mantenimiento?")) {
-        try {
-            const res = await fetch(`https://flotasmart-backend.onrender.com/api/vehiculos/${id_vehiculo}/mantenimiento`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' }
-            });
+// ==========================================
+// 2. FUNCIONES PARA ABRIR LAS VENTANAS (MODALES)
+// ==========================================
 
-            if (res.ok) {
-                window.location.reload(); 
-            } else {
-                alert('❌ Error al reportar la incidencia.');
-            }
-        } catch (error) {
-            console.error("Error de conexión:", error);
-        }
+function abrirModalUso(id_vehiculo) {
+    // Le pasamos el ID oculto al formulario
+    document.getElementById('uso-id-vehiculo').value = id_vehiculo;
+    
+    // Rellenamos el ID del usuario que autoriza
+    const usuario = JSON.parse(localStorage.getItem('usuarioFlota'));
+    if(usuario && document.getElementById('uso-id-usuario')) {
+        document.getElementById('uso-id-usuario').value = usuario.id_usuario || usuario.id; 
     }
+    
+    // Abrimos el modal
+    new bootstrap.Modal(document.getElementById('modal-uso')).show();
 }
 
+function abrirModalEvento(id_vehiculo) {
+    // Le pasamos el ID oculto al formulario
+    document.getElementById('evento-id-vehiculo').value = id_vehiculo;
+    
+    // Abrimos el modal
+    new bootstrap.Modal(document.getElementById('modal-evento')).show();
+}
+
+function abrirModalHistorial(id_vehiculo) {
+    // Abrimos la ventana del historial
+    new bootstrap.Modal(document.getElementById('modal-historial')).show();
+    
+    // Mensaje temporal mientras programamos la carga de la tabla
+    document.getElementById('tabla-historial').innerHTML = '<tr><td colspan="3" class="text-center text-muted">Cargando historial del vehículo...</td></tr>';
+}
 
 // ==========================================
-// 2. FUNCIONES PARA DIBUJAR LA INTERFAZ (UI)
+// 3. FUNCIONES PARA DIBUJAR LA INTERFAZ (UI)
 // ==========================================
 
 function renderizarVehiculos(vehiculos) {
     const contenedor = document.getElementById('contenedor-vehiculos');
-    if (!contenedor) return; // Si no estamos en la página principal, no hace nada
+    if (!contenedor) return; 
     
     contenedor.innerHTML = ''; // Limpiamos antes de dibujar
 
@@ -75,8 +89,8 @@ function renderizarVehiculos(vehiculos) {
         let botonesHTML = '';
         if (esActivo) {
             botonesHTML = `
-                <button class="btn btn-outline-success w-100 mb-2 fw-bold" style="border-radius: 10px;">🚗 Autorizar Salida</button>
-                <button class="btn btn-outline-danger w-100 mb-2 fw-bold" style="border-radius: 10px;" onclick="reportarIncidencia(${auto.id_vehiculo})">🔧 Reportar Incidencia</button>
+                <button class="btn btn-outline-success w-100 mb-2 fw-bold" style="border-radius: 10px;" onclick="abrirModalUso(${auto.id_vehiculo})">🚗 Autorizar Salida</button>
+                <button class="btn btn-outline-danger w-100 mb-2 fw-bold" style="border-radius: 10px;" onclick="abrirModalEvento(${auto.id_vehiculo})">🔧 Reportar Incidencia</button>
             `;
         } else {
             botonesHTML = `
@@ -103,7 +117,7 @@ function renderizarVehiculos(vehiculos) {
                     
                     <div class="mt-auto">
                         ${botonesHTML}
-                        <button class="btn btn-outline-primary w-100 fw-bold" style="border-radius: 10px;">📖 Ver Historial</button>
+                        <button class="btn btn-outline-primary w-100 fw-bold" style="border-radius: 10px;" onclick="abrirModalHistorial(${auto.id_vehiculo})">📖 Ver Historial</button>
                     </div>
                 </div>
             </div>
@@ -113,7 +127,6 @@ function renderizarVehiculos(vehiculos) {
 }
 
 function actualizarDashboard(vehiculos) {
-    // Calculamos cuántos hay de cada uno
     const activos = vehiculos.filter(v => v.estado_actual.toLowerCase() === 'activo').length;
     const enMantenimiento = vehiculos.filter(v => v.estado_actual.toLowerCase() !== 'activo').length;
 
@@ -134,14 +147,14 @@ function actualizarDashboard(vehiculos) {
         });
     }
 
-    // 2. Dibujar Ranking de Fallas (Simulado con los que están en taller)
+    // 2. Dibujar Ranking de Fallas
     const ranking = document.getElementById('contenedor-ranking');
     if (ranking) {
         ranking.innerHTML = '';
         const autosEnTaller = vehiculos.filter(v => v.estado_actual.toLowerCase() !== 'activo');
         
         if(autosEnTaller.length === 0) {
-            ranking.innerHTML = '<p class="text-muted">No hay unidades con fallas reportadas. ¡Todo excelente! 🎉</p>';
+            ranking.innerHTML = '<p class="text-muted text-center mt-3">No hay unidades con fallas reportadas. ¡Todo excelente! 🎉</p>';
         } else {
             autosEnTaller.forEach(auto => {
                 ranking.innerHTML += `
@@ -155,17 +168,21 @@ function actualizarDashboard(vehiculos) {
 }
 
 // ==========================================
-// 3. LA LLAVE DEL MOTOR (Arranque)
+// 4. LA LLAVE DEL MOTOR (Arranque Automático)
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     // Revisamos si el usuario está logueado
     const usuario = JSON.parse(localStorage.getItem('usuarioFlota'));
     
     if(!usuario) {
-        // Si no hay sesión, lo pateamos al login
+        // Si no hay sesión, lo mandamos al login
         window.location.href = 'login.html';
     } else {
-        // Si sí hay sesión, arrancamos la carga de vehículos
+        // Ponemos su nombre en la barra superior
+        const navUsuario = document.getElementById('nav-usuario-rol');
+        if(navUsuario) navUsuario.textContent = `Hola, ${usuario.nombre || 'Administrador'}`;
+        
+        // Arrancamos la carga de vehículos
         cargarVehiculos();
     }
 });
