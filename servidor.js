@@ -1,49 +1,66 @@
 const express = require('express');
-const cors = require('cors'); 
+const cors = require('cors');
+const bcrypt = require('bcrypt');
+require('dotenv').config(); // Para leer tus variables ocultas
+
+// Importamos la conexión a la base de datos
+const bd = require('./src/bd/conexion');
+
 const app = express();
 
-// Importamos tu conexión a la base de datos
-const bd = require('./src/bd/conexion'); 
-
-const puerto = process.env.PORT || 3000;
-
-// Importamos las demás rutas
-const rutas_vehiculos = require('./src/rutas/vehiculos');
-const rutas_usos = require('./src/rutas/usos');
-const rutas_eventos = require('./src/rutas/eventos');
-const rutas_historial = require('./src/rutas/historial');
-
-// Permisos para que Hostinger y Render hablen entre sí
-app.use(cors()); 
+// Middlewares necesarios
+app.use(cors());
 app.use(express.json());
 
-// Activamos las rutas de tu sistema
-app.use('/api/vehiculos', rutas_vehiculos);
-app.use('/api/usos', rutas_usos);
-app.use('/api/eventos', rutas_eventos);
-app.use('/api/historial', rutas_historial);
+// ==========================================
+// 1. IMPORTACIÓN Y CONEXIÓN DE RUTAS
+// ==========================================
+// Asegúrate de tener estos archivos creados en tu carpeta src/rutas/
+const rutasVehiculos = require('./src/rutas/vehiculos');
+const rutasEventos = require('./src/rutas/eventos');
+const rutasUsos = require('./src/rutas/usos');
+const rutasGasolina = require('./src/rutas/gasolina'); // 🔥 NUEVA RUTA DE GASOLINA
 
-// 🔥 LA RUTA SALVAVIDAS: El Login directo en el servidor 🔥
+// Le decimos a Node.js que use esas rutas
+app.use('/api/vehiculos', rutasVehiculos);
+app.use('/api/eventos', rutasEventos);
+app.use('/api/usos', rutasUsos);
+app.use('/api/gasolina', rutasGasolina); // 🔥 CONECTADA AL SISTEMA
+
+// ==========================================
+// 2. RUTA DE LOGIN (Con seguridad Bcrypt)
+// ==========================================
 app.post('/api/login', (req, res) => {
     const { correo, contrasena } = req.body;
     
-    const consulta = 'SELECT * FROM usuarios WHERE correo = ? AND contrasena = ?';
+    const consulta = 'SELECT * FROM usuarios WHERE correo = ?';
     
-    bd.query(consulta, [correo, contrasena], (error, resultados) => {
-        if (error) {
-            console.error("Error en BD:", error);
-            return res.status(500).json({ error: 'Error en la base de datos' });
-        }
+    bd.query(consulta, [correo], async (error, resultados) => {
+        if (error) return res.status(500).json({ error: 'Error en la base de datos' });
         
         if (resultados.length > 0) {
-            res.json({ mensaje: 'Login exitoso', usuario: resultados[0] });
+            const usuario = resultados[0];
+            
+            // Comparamos la contraseña escrita con el hash de la BD
+            const coincide = await bcrypt.compare(contrasena, usuario.contrasena);
+            
+            if (coincide) {
+                // Borramos la contraseña antes de enviar los datos al frontend por seguridad
+                delete usuario.contrasena; 
+                res.json({ mensaje: 'Login exitoso', usuario: usuario });
+            } else {
+                res.status(401).json({ error: 'Contraseña incorrecta' });
+            }
         } else {
-            res.status(401).json({ error: 'Correo o contraseña incorrectos' });
+            res.status(401).json({ error: 'El usuario no existe' });
         }
     });
 });
 
-// Arrancamos el motor
-app.listen(puerto, () => {
-    console.log(`✅ Backend corriendo con éxito en el puerto ${puerto}`);
+// ==========================================
+// 3. ARRANQUE DEL SERVIDOR
+// ==========================================
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`✅ Servidor de FlotaSmart corriendo exitosamente en el puerto ${PORT} 🚀`);
 });
