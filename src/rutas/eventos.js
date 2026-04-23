@@ -24,4 +24,17 @@ enrutador.post('/', (req, res) => {
     });
 });
 
+// 🔥 CORRECCIÓN AQUÍ: Usamos "enrutador.get" en lugar de "router.get" 🔥
+enrutador.get('/', (req, res) => {
+    const consulta = 'SELECT * FROM eventos'; 
+    
+    bd.query(consulta, (error, resultados) => {
+        if (error) {
+            console.error("Error obteniendo eventos:", error);
+            return res.status(500).json({ error: 'Error en la base de datos' });
+        }
+        res.json(resultados);
+    });
+});
+
 module.exports = enrutador;
