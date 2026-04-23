@@ -1,5 +1,5 @@
 // ==========================================
-// 1. FUNCIONES DE CARGA Y CONEXIÓN BÁSICA
+// 1. FUNCIONES DE CARGA Y CONEXIÓN
 // ==========================================
 const API_URL = 'https://flotasmart-backend.onrender.com';
 
@@ -9,7 +9,7 @@ async function cargarVehiculos() {
         const vehiculos = await res.json();
         
         renderizarVehiculos(vehiculos);
-        actualizarDashboard(vehiculos);
+        actualizarDashboard(vehiculos); // Esta función ahora calcula el top real
     } catch (error) {
         console.error("Error al cargar los vehículos:", error);
     }
@@ -21,14 +21,12 @@ async function liberarVehiculo(id_vehiculo) {
             const res = await fetch(`${API_URL}/api/vehiculos/${id_vehiculo}/liberar`, { method: 'PUT' });
             if (res.ok) window.location.reload(); 
             else alert('❌ Hubo un error al intentar liberar el vehículo.');
-        } catch (error) {
-            console.error(error);
-        }
+        } catch (error) { console.error(error); }
     }
 }
 
 // ==========================================
-// 2. FUNCIONES DE MODALES E HISTORIAL
+// 2. FUNCIONES DE MODALES E HISTORIAL INTELIGENTE
 // ==========================================
 
 function abrirModalUso(id_vehiculo) {
@@ -45,19 +43,17 @@ function abrirModalEvento(id_vehiculo) {
     new bootstrap.Modal(document.getElementById('modal-evento')).show();
 }
 
-// 🔥 NUEVO: Función real que trae el historial desde la base de datos
 async function abrirModalHistorial(id_vehiculo) {
     new bootstrap.Modal(document.getElementById('modal-historial')).show();
     const tabla = document.getElementById('tabla-historial');
-    tabla.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-4"><div class="spinner-border text-primary" role="status"></div><br>Cargando datos...</td></tr>';
+    tabla.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-4">Cargando datos...</td></tr>';
 
     try {
-        // Buscamos en tu ruta de historial (si falla, intenta buscar en eventos o usos)
         const res = await fetch(`${API_URL}/api/historial/${id_vehiculo}`);
         if (!res.ok) throw new Error('No se pudo cargar el historial');
         
         const historial = await res.json();
-        tabla.innerHTML = ''; // Limpiamos el mensaje de carga
+        tabla.innerHTML = ''; 
 
         if(historial.length === 0) {
             tabla.innerHTML = '<tr><td colspan="3" class="text-center text-muted">No hay registros previos para este vehículo.</td></tr>';
@@ -65,28 +61,39 @@ async function abrirModalHistorial(id_vehiculo) {
         }
 
         historial.forEach(item => {
-            // Formateamos la fecha si existe
             let fecha = item.fecha ? new Date(item.fecha).toLocaleDateString() : 'Sin fecha';
-            // Usamos las columnas de tu BD (ajusta si se llaman diferente)
-            let actividad = item.actividad || item.tipo_evento || item.proposito || 'Registro de sistema';
-            let detalles = item.detalles || item.descripcion || 'Sin detalles adicionales';
+            // Unificamos el nombre de la actividad basándonos en lo que traiga tu BD
+            let actividad = item.actividad || item.tipo_evento || item.proposito || 'Registro';
+            let detalles = item.detalles || item.descripcion || item.causa || 'Sin detalles adicionales';
+
+            // 🎨 Lógica de colores inteligente
+            let colorBadge = 'bg-secondary';
+            let texto = actividad.toLowerCase();
+            
+            if (texto.includes('falla') || texto.includes('accidente') || texto.includes('mantenimiento')) {
+                colorBadge = 'bg-danger'; // Rojo para fallas
+            } else if (texto.includes('logística') || texto.includes('transporte') || texto.includes('salida') || texto.includes('uso')) {
+                colorBadge = 'bg-primary'; // Azul para salidas
+            } else if (texto.includes('libera') || texto.includes('retorno') || texto.includes('activo')) {
+                colorBadge = 'bg-success'; // Verde para cosas buenas
+            }
 
             tabla.innerHTML += `
                 <tr>
                     <td class="fw-bold text-muted">${fecha}</td>
-                    <td><span class="badge bg-secondary">${actividad}</span></td>
+                    <td><span class="badge ${colorBadge}">${actividad}</span></td>
                     <td class="small">${detalles}</td>
                 </tr>
             `;
         });
     } catch (error) {
         console.error(error);
-        tabla.innerHTML = '<tr><td colspan="3" class="text-center text-danger">⚠️ No se pudo obtener el historial. Verifica las rutas en el backend.</td></tr>';
+        tabla.innerHTML = '<tr><td colspan="3" class="text-center text-danger">⚠️ El historial no está disponible.</td></tr>';
     }
 }
 
 // ==========================================
-// 3. DIBUJAR INTERFAZ (Tarjetas y Dashboard)
+// 3. DIBUJAR INTERFAZ (Tarjetas y Dashboard Real)
 // ==========================================
 
 function renderizarVehiculos(vehiculos) {
@@ -95,9 +102,12 @@ function renderizarVehiculos(vehiculos) {
     contenedor.innerHTML = ''; 
 
     vehiculos.forEach(auto => {
+        // Detectamos si está "En Ruta" para mostrar los botones correctos
         const esActivo = auto.estado_actual.toLowerCase() === 'activo';
-        const colorBadge = esActivo ? 'bg-activo' : 'bg-mantenimiento';
-        const textoEstado = esActivo ? 'Activo' : 'En mantenimiento';
+        const esMantenimiento = auto.estado_actual.toLowerCase().includes('mantenimiento');
+        
+        let colorBadge = esActivo ? 'bg-activo' : (esMantenimiento ? 'bg-mantenimiento' : 'bg-primary text-white');
+        let textoEstado = auto.estado_actual;
         
         let botonesHTML = '';
         if (esActivo) {
@@ -105,9 +115,14 @@ function renderizarVehiculos(vehiculos) {
                 <button class="btn btn-outline-success w-100 mb-2 fw-bold" style="border-radius: 10px;" onclick="abrirModalUso(${auto.id_vehiculo})">🚗 Autorizar Salida</button>
                 <button class="btn btn-outline-danger w-100 mb-2 fw-bold" style="border-radius: 10px;" onclick="abrirModalEvento(${auto.id_vehiculo})">🔧 Reportar Incidencia</button>
             `;
-        } else {
+        } else if (esMantenimiento) {
             botonesHTML = `
                 <button class="btn w-100 mb-2 fw-bold" style="background-color: #d4af37; color: white; border-radius: 10px;" onclick="liberarVehiculo(${auto.id_vehiculo})">✅ Liberar del Taller</button>
+            `;
+        } else {
+            // Si está "En Ruta" (o cualquier otro)
+            botonesHTML = `
+                <button class="btn btn-info text-white w-100 mb-2 fw-bold" style="border-radius: 10px;" onclick="alert('Funcionalidad de retorno pendiente')">📍 Registrar Retorno</button>
             `;
         }
 
@@ -122,7 +137,7 @@ function renderizarVehiculos(vehiculos) {
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <span class="text-muted fw-bold small">Estado:</span>
-                        <span class="status-badge ${colorBadge} px-3 py-2">${textoEstado}</span>
+                        <span class="status-badge ${colorBadge} px-3 py-2 text-capitalize">${textoEstado}</span>
                     </div>
                     <div class="mt-auto">
                         ${botonesHTML}
@@ -134,11 +149,13 @@ function renderizarVehiculos(vehiculos) {
     });
 }
 
-function actualizarDashboard(vehiculos) {
+async function actualizarDashboard(vehiculos) {
+    // 1. Gráfica
     const activos = vehiculos.filter(v => v.estado_actual.toLowerCase() === 'activo').length;
-    const enMantenimiento = vehiculos.filter(v => v.estado_actual.toLowerCase() !== 'activo').length;
+    const enMantenimiento = vehiculos.filter(v => v.estado_actual.toLowerCase().includes('mantenimiento')).length;
 
     const ctx = document.getElementById('graficaFlota');
+    if (ctx && Chart.getChart(ctx)) Chart.getChart(ctx).destroy(); // Evitar que se empalmen gráficas
     if (ctx) {
         new Chart(ctx, {
             type: 'doughnut',
@@ -150,25 +167,48 @@ function actualizarDashboard(vehiculos) {
         });
     }
 
+    // 2. Ranking REAL de fallas (Se conecta a la BD de eventos)
     const ranking = document.getElementById('contenedor-ranking');
-    if (ranking) {
+    if (!ranking) return;
+
+    try {
+        const res = await fetch(`${API_URL}/api/eventos`);
+        if (!res.ok) throw new Error("No se pueden leer los eventos");
+        const eventos = await res.json();
+
+        // Contamos cuántas fallas tiene cada ID
+        const conteo = {};
+        eventos.forEach(ev => {
+            conteo[ev.id_vehiculo] = (conteo[ev.id_vehiculo] || 0) + 1;
+        });
+
+        // Ordenamos y sacamos los peores 3
+        const topFallas = Object.keys(conteo).map(id => {
+            const auto = vehiculos.find(v => v.id_vehiculo == id);
+            return {
+                nombre: auto ? `${auto.marca} ${auto.modelo}` : `Unidad #${id}`,
+                fallas: conteo[id]
+            };
+        }).sort((a, b) => b.fallas - a.fallas).slice(0, 3);
+
         ranking.innerHTML = '';
-        const autosEnTaller = vehiculos.filter(v => v.estado_actual.toLowerCase() !== 'activo');
-        if(autosEnTaller.length === 0) {
-            ranking.innerHTML = '<p class="text-muted text-center mt-3">No hay unidades con fallas reportadas. ¡Todo excelente! 🎉</p>';
+        if(topFallas.length === 0) {
+            ranking.innerHTML = '<p class="text-muted text-center mt-3">No hay historial de fallas. ¡Excelente! 🎉</p>';
         } else {
-            autosEnTaller.forEach(auto => {
-                ranking.innerHTML += `<div class="d-flex justify-content-between align-items-center mb-3 p-2 border-bottom"><span class="fw-bold">${auto.marca} ${auto.modelo}</span><span class="badge bg-danger rounded-pill px-3 py-2">En Taller</span></div>`;
+            topFallas.forEach(item => {
+                ranking.innerHTML += `<div class="d-flex justify-content-between align-items-center mb-3 p-2 border-bottom"><span class="fw-bold">${item.nombre}</span><span class="badge bg-danger rounded-pill px-3 py-2">${item.fallas} Fallas</span></div>`;
             });
         }
+    } catch (error) {
+        console.log("No se pudo cargar el Top de Fallas avanzado:", error);
+        ranking.innerHTML = '<p class="text-muted text-center">Calculando datos desde el servidor...</p>';
     }
 }
 
 // ==========================================
-// 4. CAPTURAR FORMULARIOS Y ENVIAR AL SERVIDOR
+// 4. CAPTURAR FORMULARIOS
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    // Verificar sesión
     const usuario = JSON.parse(localStorage.getItem('usuarioFlota'));
     if(!usuario) { window.location.href = 'login.html'; return; }
     
@@ -177,17 +217,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     cargarVehiculos();
 
-    // 🔥 EVITAR QUE LA PÁGINA SE RECARGUE SOLA Y ENVIAR LOS DATOS 🔥
-
     // Formulario: Reportar Falla (Evento)
     const formEvento = document.getElementById('formulario-evento');
     if(formEvento) {
         formEvento.addEventListener('submit', async (e) => {
-            e.preventDefault(); // <- ESTO EVITA QUE LA PÁGINA SE RECARGUE
+            e.preventDefault(); 
             const id_vehiculo = document.getElementById('evento-id-vehiculo').value;
-            
             try {
-                // 1. Enviamos los datos del reporte a la BD (Ruta de eventos)
                 await fetch(`${API_URL}/api/eventos`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -198,33 +234,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         costo: document.getElementById('evento-costo').value
                     })
                 });
-
-                // 2. Cambiamos el estado del auto a mantenimiento
-                const res = await fetch(`${API_URL}/api/vehiculos/${id_vehiculo}/mantenimiento`, { method: 'PUT' });
-                if(res.ok) window.location.reload(); // Recargamos para ver el cambio
-            } catch(error) { console.error("Error al reportar:", error); alert("Error al contactar al servidor."); }
-        });
-    }
-
-    // Formulario: Registrar Unidad Nueva
-    const formVehiculo = document.getElementById('formulario-vehiculo');
-    if(formVehiculo) {
-        formVehiculo.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            try {
-                const res = await fetch(`${API_URL}/api/vehiculos`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        placa: document.getElementById('input-placa').value,
-                        marca: document.getElementById('input-marca').value,
-                        modelo: document.getElementById('input-modelo').value,
-                        anio: document.getElementById('input-anio').value,
-                        estado_actual: 'Activo'
-                    })
-                });
-                if(res.ok) window.location.reload();
-            } catch(error) { console.error(error); }
+                await fetch(`${API_URL}/api/vehiculos/${id_vehiculo}/mantenimiento`, { method: 'PUT' });
+                window.location.reload(); 
+            } catch(error) { alert("Error al reportar"); }
         });
     }
 
@@ -235,7 +247,6 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const id_vehiculo = document.getElementById('uso-id-vehiculo').value;
             try {
-                // Registramos el uso
                 await fetch(`${API_URL}/api/usos`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -246,8 +257,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         kilometraje_salida: document.getElementById('uso-kilometraje').value
                     })
                 });
-                // (Opcional) si tienes una ruta para ponerlo "En Ruta", sería aquí
-                alert("Salida registrada con éxito en el historial.");
+                // OPCIONAL: Si tu backend tiene la ruta para pasarlo a "En Ruta", descomenta la línea de abajo:
+                // await fetch(`${API_URL}/api/vehiculos/${id_vehiculo}/ruta`, { method: 'PUT' });
+                
+                alert("Salida registrada con éxito.");
                 window.location.reload();
             } catch(error) { console.error(error); }
         });
