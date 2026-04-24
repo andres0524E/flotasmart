@@ -6,18 +6,20 @@
     <title>FlotaSmart | Panel de Control</title>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         *,*::before,*::after{box-sizing:border-box}
+        /* 🔥 COLORES ROJOS APLICADOS AQUÍ */
         :root{
             --bg:#080c14;--surface:#0e1421;--surface2:#131927;--border:rgba(255,255,255,0.07);
-            --accent:#00d4ff;--accent2:#0066ff;--text:#e8edf5;--muted:#5a6a80;
+            --accent:#ff4d4d;--accent2:#cc0000;--text:#e8edf5;--muted:#5a6a80;
             --danger:#ff4757;--success:#00e676;--warn:#ffbe21;--info:#7c83ff;
             --blocked:#ff6b35;
         }
         body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
-        body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.02) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+        body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,77,77,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,77,77,0.02) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
 
-        /* ─── NAVBAR ─── */
+        /* NAVBAR */
         .navbar-fs{background:rgba(8,12,20,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:14px 0;position:sticky;top:0;z-index:100}
         .navbar-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--text)!important;letter-spacing:-.5px}
         .navbar-brand span{color:var(--accent)}
@@ -27,26 +29,21 @@
         .btn-logout{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;padding:4px 12px;cursor:pointer;transition:all .2s;margin-top:4px}
         .btn-logout:hover{border-color:var(--danger);color:var(--danger)}
 
-        /* ─── CONTENEDOR ─── */
         .main-wrap{max-width:1300px;margin:0 auto;padding:32px 20px;position:relative;z-index:1}
-
-        /* ─── HEADER DEL PANEL ─── */
         .panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;flex-wrap:wrap;gap:16px}
         .panel-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;letter-spacing:-.5px;margin:0}
         .panel-subtitle{color:var(--muted);font-size:14px;margin:2px 0 0}
 
-        /* ─── TABS ─── */
+        /* TABS */
         .tabs-bar{display:flex;gap:4px;background:var(--surface);border-radius:14px;padding:6px;margin-bottom:32px;border:1px solid var(--border);flex-wrap:wrap}
         .tab-btn{flex:1;min-width:120px;background:none;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:10px 16px;border-radius:10px;cursor:pointer;transition:all .25s;white-space:nowrap}
         .tab-btn:hover{color:var(--text);background:rgba(255,255,255,0.04)}
-        .tab-btn.active{background:var(--accent2);color:#fff;font-weight:700;box-shadow:0 4px 12px rgba(0,102,255,0.3)}
-
-        /* ─── SECCIÓN TAB ─── */
+        .tab-btn.active{background:var(--accent2);color:#fff;font-weight:700;box-shadow:0 4px 12px rgba(204,0,0,0.3)}
         .tab-section{display:none;animation:fadeIn .35s ease}
         .tab-section.active{display:block}
         @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-        /* ─── CARDS ESTADÍSTICAS ─── */
+        /* CARDS ESTADÍSTICAS */
         .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
         .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 24px;position:relative;overflow:hidden;transition:all .25s}
         .stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
@@ -57,22 +54,22 @@
         .stat-num{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;line-height:1}
         .stat-label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-top:6px}
 
-        /* ─── DASHBOARD CHARTS ─── */
+        /* DASHBOARD CHARTS */
         .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}
         @media(max-width:768px){.chart-grid{grid-template-columns:1fr}}
         .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px}
         .chart-card-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--muted);letter-spacing:.5px;margin-bottom:20px;text-transform:uppercase}
 
-        /* ─── FILTROS ─── */
+        /* FILTROS */
         .filters-row{display:flex;align-items:center;gap:10px;margin-bottom:24px;flex-wrap:wrap}
         .filter-btn{background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:13px;padding:8px 16px;cursor:pointer;transition:all .2s}
         .filter-btn:hover{border-color:var(--accent);color:var(--accent)}
-        .filter-btn.active{background:rgba(0,212,255,0.1);border-color:var(--accent);color:var(--accent);font-weight:600}
+        .filter-btn.active{background:rgba(255,77,77,0.1);border-color:var(--accent);color:var(--accent);font-weight:600}
         .search-input{background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 16px;outline:none;transition:all .2s;min-width:180px}
         .search-input::placeholder{color:var(--muted)}
-        .search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,255,0.08)}
+        .search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,77,77,0.08)}
 
-        /* ─── TARJETAS VEHÍCULO ─── */
+        /* TARJETAS VEHÍCULO */
         .vehicle-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
         .v-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;animation:cardIn .4s ease both}
         @keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
@@ -82,7 +79,7 @@
         .v-card.estado-ruta::before{background:var(--info)}
         .v-card.estado-bloqueado::before{background:var(--blocked)}
         .v-card.estado-otro::before{background:var(--muted)}
-        .v-card:hover{transform:translateY(-4px);border-color:rgba(0,212,255,0.2);box-shadow:0 12px 40px rgba(0,0,0,0.4)}
+        .v-card:hover{transform:translateY(-4px);border-color:rgba(255,77,77,0.2);box-shadow:0 12px 40px rgba(0,0,0,0.4)}
         .v-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
         .v-marca{font-family:'Syne',sans-serif;font-size:18px;font-weight:700}
         .v-anio{color:var(--muted);font-size:12px;margin-top:2px}
@@ -103,7 +100,7 @@
         .v-alert.servicio{background:rgba(255,190,33,0.1);color:var(--warn);border:1px solid rgba(255,190,33,0.2)}
         .v-chofer-actions{margin-top:16px;display:flex;flex-direction:column;gap:8px}
 
-        /* ─── MÓDULO FINANCIERO ─── */
+        /* MÓDULO FINANCIERO */
         .finance-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:28px}
         .fin-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;position:relative;overflow:hidden}
         .fin-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
@@ -118,12 +115,12 @@
         .fin-table tr td:first-child{border-radius:10px 0 0 10px}
         .fin-table tr td:last-child{border-radius:0 10px 10px 0}
 
-        /* ─── MECÁNICO VIEW ─── */
+        /* MECÁNICO VIEW */
         .mec-banner{background:rgba(255,190,33,0.08);border:1px solid rgba(255,190,33,0.2);border-radius:14px;padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:12px}
         .mec-icon{font-size:24px}
         .mec-text{font-size:14px;color:var(--warn)}
 
-        /* ─── BOTONES ACCIÓN ─── */
+        /* BOTONES ACCIÓN */
         .btn-fs{border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:11px 18px;cursor:pointer;transition:all .25s;width:100%;margin-top:6px;display:block}
         .btn-fs:hover{transform:translateY(-1px)}
         .btn-fs-success{background:rgba(0,230,118,0.12);color:var(--success);border:1px solid rgba(0,230,118,0.2)}
@@ -139,10 +136,9 @@
         .btn-fs-blocked{background:rgba(255,107,53,0.12);color:var(--blocked);border:1px solid rgba(255,107,53,0.2)}
         .btn-fs-blocked:hover{background:var(--blocked);color:#fff}
         .btn-fs-primary{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;border:none}
-        .btn-fs-primary:hover{box-shadow:0 8px 20px rgba(0,102,255,0.4)}
-        .btn-small{padding:8px 14px;font-size:12px;width:auto;display:inline-block;margin-top:0}
+        .btn-fs-primary:hover{box-shadow:0 8px 20px rgba(204,0,0,0.4)}
 
-        /* ─── MODALES DARK ─── */
+        /* MODALES DARK */
         .modal-content{background:var(--surface);border:1px solid var(--border);border-radius:20px;color:var(--text)}
         .modal-header{background:var(--surface2);border-bottom:1px solid var(--border);border-radius:20px 20px 0 0;padding:20px 24px}
         .modal-title{font-family:'Syne',sans-serif;font-weight:700;font-size:16px}
@@ -150,111 +146,100 @@
         .btn-close-white{filter:invert(1) grayscale(1) brightness(2)}
         .fs-label{display:block;font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
         .fs-input,.fs-select,.fs-textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:12px 16px;transition:all .2s;outline:none;margin-bottom:16px}
-        .fs-input:focus,.fs-select:focus,.fs-textarea:focus{border-color:rgba(0,212,255,0.4);box-shadow:0 0 0 3px rgba(0,212,255,0.08)}
+        .fs-input:focus,.fs-select:focus,.fs-textarea:focus{border-color:rgba(255,77,77,0.4);box-shadow:0 0 0 3px rgba(255,77,77,0.08)}
         .fs-select option{background:#1a2035}
         .fs-textarea{resize:vertical;min-height:80px}
         .fs-hint{font-size:12px;color:var(--accent);margin-bottom:8px;margin-top:-10px}
 
-        /* ─── HISTORIAL ─── */
+        /* HISTORIAL */
         .hist-row{display:grid;grid-template-columns:100px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);animation:fadeIn .3s ease}
         .hist-row:last-child{border-bottom:none}
         .hist-date{color:var(--muted);font-size:12px}
         .hist-detail{font-size:13px}
         .hist-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap}
 
-        /* ─── RANKING ─── */
+        /* RANKING */
         .rank-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
         .rank-item:last-child{border-bottom:none}
         .rank-num{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--border);width:32px}
         .rank-name{font-weight:600;font-size:14px}
         .rank-badge{background:rgba(255,71,87,0.15);color:var(--danger);border:1px solid rgba(255,71,87,0.2);font-size:12px;font-weight:700;padding:4px 14px;border-radius:20px}
 
-        /* ─── BOTÓN REGISTRAR ─── */
+        /* BOTÓN REGISTRAR */
         #btn-registrar-unidad{background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:12px;color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;padding:12px 24px;cursor:pointer;transition:all .3s}
-        #btn-registrar-unidad:hover{box-shadow:0 8px 25px rgba(0,102,255,0.4);transform:translateY(-1px)}
+        #btn-registrar-unidad:hover{box-shadow:0 8px 25px rgba(204,0,0,0.4);transform:translateY(-1px)}
 
-        /* ─── PARO MOTOR ─── */
+        /* PARO MOTOR */
         .btn-paro{background:rgba(255,71,87,0.15);border:2px solid var(--danger);border-radius:12px;color:var(--danger);font-family:'Syne',sans-serif;font-size:14px;font-weight:800;padding:14px;width:100%;cursor:pointer;margin-top:8px;letter-spacing:.5px;transition:all .3s;animation:paroPulse 2s ease-in-out infinite}
         @keyframes paroPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,71,87,0.3)}50%{box-shadow:0 0 0 8px rgba(255,71,87,0)}}
         .btn-paro:hover{background:var(--danger);color:#fff;animation:none}
         .btn-desbloquear{background:rgba(0,230,118,0.15);border:2px solid var(--success);border-radius:12px;color:var(--success);font-family:'Syne',sans-serif;font-size:14px;font-weight:800;padding:14px;width:100%;cursor:pointer;margin-top:8px;transition:all .3s}
         .btn-desbloquear:hover{background:var(--success);color:#000}
 
-        /* ─── DETALLES MODAL ─── */
+        /* DETALLES MODAL */
         .detalles-header{display:flex;align-items:center;gap:16px;padding-bottom:20px;border-bottom:1px solid var(--border);margin-bottom:20px}
-        .detalles-placa-chip{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);color:var(--accent);padding:6px 16px;border-radius:10px;letter-spacing:2px}
+        .detalles-placa-chip{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;background:rgba(255,77,77,0.08);border:1px solid rgba(255,77,77,0.2);color:var(--accent);padding:6px 16px;border-radius:10px;letter-spacing:2px}
         .detalles-stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
         .det-stat{background:var(--surface2);border-radius:12px;padding:16px;text-align:center}
         .det-stat-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:700}
         .det-stat-lbl{color:var(--muted);font-size:11px;margin-top:4px}
 
-        /* Alerts insurance */
         .alerta-seguro-banner{background:rgba(255,71,87,0.1);border:1px solid rgba(255,71,87,0.3);border-radius:10px;color:#ff6b7a;font-size:12px;padding:10px 14px;margin-bottom:16px}
         .alerta-km-banner{background:rgba(255,190,33,0.1);border:1px solid rgba(255,190,33,0.3);border-radius:10px;color:var(--warn);font-size:12px;padding:10px 14px;margin-bottom:8px}
 
-        /* Scrollbar */
         ::-webkit-scrollbar{width:6px}
         ::-webkit-scrollbar-track{background:var(--bg)}
         ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-
-        /* Bootstrap overrides */
         .modal-backdrop{background:rgba(4,6,12,0.8)!important}
         .modal-backdrop.show{opacity:1!important}
     </style>
 </head>
 <body>
 
-<!-- NAVBAR -->
 <nav class="navbar-fs">
     <div class="container-fluid" style="max-width:1300px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between">
-        <div class="navbar-brand">Flota<span>Smart</span></div>
+        <div class="navbar-brand"><i class="fa-solid fa-truck-fast"></i> Flota<span>Smart</span></div>
         <div class="nav-user">
             <div class="nav-user-name" id="nav-nombre">Cargando...</div>
             <div class="nav-user-rol" id="nav-rol">—</div>
-            <button class="btn-logout" onclick="cerrarSesion()">Cerrar sesión</button>
+            <button class="btn-logout" onclick="cerrarSesion()"><i class="fa-solid fa-power-off"></i> Cerrar sesión</button>
         </div>
     </div>
 </nav>
 
 <div class="main-wrap">
 
-    <!-- HEADER -->
     <div class="panel-header">
         <div>
             <h1 class="panel-title">Panel de Control</h1>
             <p class="panel-subtitle">Gestión estratégica y seguimiento de unidades.</p>
         </div>
-        <button id="btn-registrar-unidad" data-bs-toggle="modal" data-bs-target="#modal-vehiculo">+ Registrar Unidad</button>
+        <button id="btn-registrar-unidad" data-bs-toggle="modal" data-bs-target="#modal-vehiculo"><i class="fa-solid fa-plus"></i> Registrar Unidad</button>
     </div>
 
-    <!-- BANNER MECÁNICO -->
     <div class="mec-banner" id="banner-mecanico" style="display:none">
-        <span class="mec-icon">🔧</span>
+        <span class="mec-icon"><i class="fa-solid fa-screwdriver-wrench"></i></span>
         <span class="mec-text"><strong>Vista Mecánico:</strong> Mostrando únicamente unidades en taller. Solo tú puedes liberarlas después de registrar la intervención.</span>
     </div>
 
-    <!-- TABS -->
     <div class="tabs-bar" id="tabs-bar">
-        <button class="tab-btn active" data-tab="flota" onclick="cambiarTab('flota',this)">🚗 Flota</button>
-        <button class="tab-btn" data-tab="dashboard" onclick="cambiarTab('dashboard',this)" id="tab-dashboard">📊 Dashboard</button>
-        <button class="tab-btn" data-tab="financiero" onclick="cambiarTab('financiero',this)" id="tab-financiero">💰 Financiero</button>
+        <button class="tab-btn active" data-tab="flota" onclick="cambiarTab('flota',this)"><i class="fa-solid fa-car"></i> Flota</button>
+        <button class="tab-btn" data-tab="dashboard" onclick="cambiarTab('dashboard',this)" id="tab-dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
+        <button class="tab-btn" data-tab="financiero" onclick="cambiarTab('financiero',this)" id="tab-financiero"><i class="fa-solid fa-wallet"></i> Financiero</button>
     </div>
 
-    <!-- TAB: FLOTA -->
     <div class="tab-section active" id="tab-flota">
-        <!-- Filtros y búsqueda -->
         <div class="filters-row" id="filtros-row">
             <button class="filter-btn active" onclick="filtrarVehiculos('todos',this)">Todos</button>
-            <button class="filter-btn" onclick="filtrarVehiculos('activo',this)">✅ Activos</button>
-            <button class="filter-btn" onclick="filtrarVehiculos('taller',this)">🔧 En Taller</button>
-            <button class="filter-btn" onclick="filtrarVehiculos('ruta',this)">🛣 En Ruta</button>
-            <button class="filter-btn" onclick="filtrarVehiculos('bloqueado',this)">🔴 Bloqueados</button>
-            <input type="text" class="search-input" id="buscador-placa" placeholder="🔍 Buscar por placa..." oninput="buscarPorPlaca(this.value)">
+            <button class="filter-btn" onclick="filtrarVehiculos('activo',this)"><i class="fa-solid fa-check"></i> Activos</button>
+            <button class="filter-btn" onclick="filtrarVehiculos('taller',this)"><i class="fa-solid fa-wrench"></i> En Taller</button>
+            <button class="filter-btn" onclick="filtrarVehiculos('ruta',this)"><i class="fa-solid fa-road"></i> En Ruta</button>
+            <button class="filter-btn" onclick="filtrarVehiculos('bloqueado',this)"><i class="fa-solid fa-lock"></i> Bloqueados</button>
+            <input type="text" class="search-input" id="buscador-placa" placeholder=" Buscar por placa..." oninput="buscarPorPlaca(this.value)">
         </div>
         <div class="vehicle-grid" id="contenedor-vehiculos"></div>
     </div>
 
-    <!-- TAB: DASHBOARD -->
     <div class="tab-section" id="tab-dashboard">
         <div class="stat-grid" id="stat-grid">
             <div class="stat-card c-total"><div class="stat-num" id="stat-total">—</div><div class="stat-label">Total Unidades</div></div>
@@ -264,44 +249,42 @@
         </div>
         <div class="chart-grid">
             <div class="chart-card">
-                <div class="chart-card-title">Salud de la Flota</div>
+                <div class="chart-card-title"><i class="fa-solid fa-heart-pulse"></i> Salud de la Flota</div>
                 <div style="height:260px;position:relative"><canvas id="graficaFlota"></canvas></div>
             </div>
             <div class="chart-card">
-                <div class="chart-card-title">⚠ Top Incidencias</div>
+                <div class="chart-card-title"><i class="fa-solid fa-triangle-exclamation"></i> Top Incidencias</div>
                 <div id="contenedor-ranking"><p style="color:var(--muted);text-align:center;margin-top:40px">Calculando...</p></div>
             </div>
         </div>
     </div>
 
-    <!-- TAB: FINANCIERO -->
     <div class="tab-section" id="tab-financiero">
         <div class="finance-summary">
             <div class="fin-card gas">
-                <div class="fin-label">⛽ Gasto en Combustible</div>
+                <div class="fin-label"><i class="fa-solid fa-gas-pump"></i> Gasto Combustible</div>
                 <div class="fin-amount" id="fin-gasolina">$—</div>
-                <div style="font-size:12px;color:var(--muted);margin-top:6px" id="fin-gasolina-litros">— litros registrados</div>
+                <div style="font-size:12px;color:var(--muted);margin-top:6px" id="fin-gasolina-litros">— litros</div>
             </div>
             <div class="fin-card rep">
-                <div class="fin-label">🔧 Costo en Reparaciones</div>
+                <div class="fin-label"><i class="fa-solid fa-wrench"></i> Costo Reparaciones</div>
                 <div class="fin-amount" id="fin-reparaciones">$—</div>
-                <div style="font-size:12px;color:var(--muted);margin-top:6px" id="fin-rep-eventos">— eventos registrados</div>
+                <div style="font-size:12px;color:var(--muted);margin-top:6px" id="fin-rep-eventos">— eventos</div>
             </div>
             <div class="fin-card total">
-                <div class="fin-label">📊 Gasto Total</div>
+                <div class="fin-label"><i class="fa-solid fa-chart-line"></i> Gasto Total</div>
                 <div class="fin-amount" id="fin-total">$—</div>
                 <div style="font-size:12px;color:var(--muted);margin-top:6px">Combustible + Reparaciones</div>
             </div>
         </div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px">
             <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:20px">Detalle por Vehículo</div>
-            <div id="fin-detalle-tabla"><p style="color:var(--muted);text-align:center">Cargando datos financieros...</p></div>
+            <div id="fin-detalle-tabla"><p style="color:var(--muted);text-align:center">Cargando datos...</p></div>
         </div>
     </div>
 
-</div><!-- end main-wrap -->
+</div>
 
-<!-- ─── MODAL DETALLES ─── -->
 <div class="modal fade" id="modal-detalles" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -327,11 +310,10 @@
   </div>
 </div>
 
-<!-- ─── MODAL REGISTRAR VEHÍCULO ─── -->
 <div class="modal fade" id="modal-vehiculo" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
-      <div class="modal-header"><h5 class="modal-title">+ Nueva Unidad</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+      <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-plus"></i> Nueva Unidad</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
       <div class="modal-body">
         <form id="formulario-vehiculo">
             <div class="row g-3">
@@ -340,7 +322,7 @@
                 <div class="col-6"><label class="fs-label">Modelo</label><input type="text" class="fs-input" id="input-modelo" maxlength="40" required></div>
                 <div class="col-6"><label class="fs-label">Año</label><input type="number" class="fs-input" id="input-anio" min="1990" max="2030" required></div>
                 <div class="col-6"><label class="fs-label">Cap. Tanque (Lts)</label><input type="number" class="fs-input" id="input-tanque" placeholder="Ej. 50" min="1" max="300" required></div>
-                <div class="col-6"><label class="fs-label">Km Próximo Servicio</label><input type="number" class="fs-input" id="input-km-servicio" placeholder="Ej. 15000" min="0"></div>
+                <div class="col-6"><label class="fs-label">Km Próx. Servicio</label><input type="number" class="fs-input" id="input-km-servicio" placeholder="Ej. 15000" min="0"></div>
                 <div class="col-12"><label class="fs-label">Vencimiento del Seguro</label><input type="date" class="fs-input" id="input-fecha-seguro"></div>
             </div>
             <button type="submit" class="btn-fs btn-fs-primary mt-2">Guardar Vehículo</button>
@@ -350,11 +332,10 @@
   </div>
 </div>
 
-<!-- ─── MODAL USO ─── -->
 <div class="modal fade" id="modal-uso" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header" style="background:rgba(0,230,118,0.08);border-bottom-color:rgba(0,230,118,0.1)"><h5 class="modal-title">🚗 Solicitar Salida</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+      <div class="modal-header" style="background:rgba(0,230,118,0.08);border-bottom-color:rgba(0,230,118,0.1)"><h5 class="modal-title"><i class="fa-solid fa-key"></i> Solicitar Salida</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
       <div class="modal-body">
         <form id="formulario-uso">
             <input type="hidden" id="uso-id-vehiculo">
@@ -376,11 +357,10 @@
   </div>
 </div>
 
-<!-- ─── MODAL RETORNO ─── -->
 <div class="modal fade" id="modal-retorno" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header" style="background:rgba(124,131,255,0.08)"><h5 class="modal-title">📍 Registrar Retorno</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+      <div class="modal-header" style="background:rgba(124,131,255,0.08)"><h5 class="modal-title"><i class="fa-solid fa-location-dot"></i> Registrar Retorno</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
       <div class="modal-body">
         <form id="formulario-retorno">
             <input type="hidden" id="retorno-id-vehiculo">
@@ -402,11 +382,10 @@
   </div>
 </div>
 
-<!-- ─── MODAL GASOLINA ─── -->
 <div class="modal fade" id="modal-gasolina" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header"><h5 class="modal-title">⛽ Cargar Combustible</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+      <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-gas-pump"></i> Cargar Combustible</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
       <div class="modal-body">
         <form id="formulario-gasolina">
             <input type="hidden" id="gasolina-id-vehiculo">
@@ -422,11 +401,10 @@
   </div>
 </div>
 
-<!-- ─── MODAL EVENTO / FALLA ─── -->
 <div class="modal fade" id="modal-evento" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header" style="background:rgba(255,71,87,0.08)"><h5 class="modal-title">🔧 Reportar Incidencia</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+      <div class="modal-header" style="background:rgba(255,71,87,0.08)"><h5 class="modal-title"><i class="fa-solid fa-wrench"></i> Reportar Incidencia</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
       <div class="modal-body">
         <form id="formulario-evento">
             <input type="hidden" id="evento-id-vehiculo">
@@ -453,16 +431,15 @@
   </div>
 </div>
 
-<!-- ─── MODAL LIBERAR MECÁNICO ─── -->
 <div class="modal fade" id="modal-liberar" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header" style="background:rgba(255,190,33,0.08)"><h5 class="modal-title">✅ Liberar del Taller</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+      <div class="modal-header" style="background:rgba(255,190,33,0.08)"><h5 class="modal-title"><i class="fa-solid fa-check"></i> Liberar del Taller</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
       <div class="modal-body">
         <form id="formulario-liberar">
             <input type="hidden" id="liberar-id-vehiculo">
             <label class="fs-label">¿Qué se reparó / revisó?</label>
-            <textarea class="fs-textarea" id="liberar-descripcion" placeholder="Describe la intervención realizada: piezas cambiadas, ajustes, diagnóstico, etc." required maxlength="500"></textarea>
+            <textarea class="fs-textarea" id="liberar-descripcion" placeholder="Describe la intervención..." required maxlength="500"></textarea>
             <button type="submit" class="btn-fs btn-fs-warn">Confirmar y Liberar</button>
         </form>
       </div>
@@ -470,11 +447,10 @@
   </div>
 </div>
 
-<!-- ─── MODAL HISTORIAL ─── -->
 <div class="modal fade" id="modal-historial" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
-      <div class="modal-header"><h5 class="modal-title">📖 Historial del Vehículo</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+      <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-book"></i> Historial del Vehículo</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
       <div class="modal-body">
         <div id="historial-contenido"></div>
       </div>
@@ -485,7 +461,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="js/principal.js?v=20260423"></script>
+<script src="js/principal.js?v=333333"></script>
 <script>
     function cerrarSesion() {
         localStorage.removeItem('usuarioFlota');
