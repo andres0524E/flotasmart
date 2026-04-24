@@ -10,7 +10,6 @@
     <link rel="icon" type="image/png" href="img/favicon.png">
     <style>
         *,*::before,*::after{box-sizing:border-box}
-        /* 🔥 COLORES ROJOS APLICADOS AQUÍ */
         :root{
             --bg:#080c14;--surface:#0e1421;--surface2:#131927;--border:rgba(255,255,255,0.07);
             --accent:#ff4d4d;--accent2:#cc0000;--text:#e8edf5;--muted:#5a6a80;
@@ -225,8 +224,8 @@
 
     <div class="tabs-bar" id="tabs-bar">
         <button class="tab-btn active" data-tab="flota" onclick="cambiarTab('flota',this)"><i class="fa-solid fa-car"></i> Flota</button>
-        <button class="tab-btn" data-tab="dashboard" onclick="cambiarTab('dashboard',this)" id="tab-dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
-        <button class="tab-btn" data-tab="financiero" onclick="cambiarTab('financiero',this)" id="tab-financiero"><i class="fa-solid fa-wallet"></i> Financiero</button>
+        <button class="tab-btn" data-tab="dashboard" onclick="cambiarTab('dashboard',this)"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
+        <button class="tab-btn" data-tab="financiero" onclick="cambiarTab('financiero',this)"><i class="fa-solid fa-wallet"></i> Financiero</button>
     </div>
 
     <div class="tab-section active" id="tab-flota">
@@ -236,7 +235,7 @@
             <button class="filter-btn" onclick="filtrarVehiculos('taller',this)"><i class="fa-solid fa-wrench"></i> En Taller</button>
             <button class="filter-btn" onclick="filtrarVehiculos('ruta',this)"><i class="fa-solid fa-road"></i> En Ruta</button>
             <button class="filter-btn" onclick="filtrarVehiculos('bloqueado',this)"><i class="fa-solid fa-lock"></i> Bloqueados</button>
-            <input type="text" class="search-input" id="buscador-placa" placeholder=" Buscar por placa..." oninput="buscarPorPlaca(this.value)">
+            <input type="text" class="search-input" id="buscador-placa" placeholder="🔍 Buscar por placa..." oninput="buscarPorPlaca(this.value)">
         </div>
         <div class="vehicle-grid" id="contenedor-vehiculos"></div>
     </div>
@@ -462,7 +461,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="js/principal.js?v=333333"></script>
+<script src="js/principal.js?v=777888"></script>
 <script>
     function cerrarSesion() {
         localStorage.removeItem('usuarioFlota');
