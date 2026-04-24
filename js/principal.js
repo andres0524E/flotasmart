@@ -58,6 +58,30 @@ function renderizarVehiculos(vehiculos) {
     });
 }
 
+// 🔥 FUNCIÓN PARA EDITAR EL TANQUE MANUALMENTE (Para autos viejos)
+async function editarTanque(id_vehiculo, capacidadActual) {
+    const { value: nuevaCapacidad } = await Swal.fire({
+        title: 'Capacidad del Tanque',
+        input: 'number',
+        inputLabel: 'Litros totales que le caben (Ej. 50)',
+        inputValue: capacidadActual || 50,
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar'
+    });
+
+    if (nuevaCapacidad) {
+        try {
+            await fetch(`${API_URL}/api/vehiculos/${id_vehiculo}/tanque`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ capacidad: nuevaCapacidad })
+            });
+            Swal.fire('¡Actualizado!', 'La capacidad fue guardada.', 'success').then(() => window.location.reload());
+        } catch(e) { Swal.fire('Error', 'No se pudo guardar.', 'error'); }
+    }
+}
+
 function abrirModalDetalles(id_vehiculo) {
     const auto = vehiculosGlobal.find(v => v.id_vehiculo === id_vehiculo);
     if(!auto) return;
@@ -68,13 +92,19 @@ function abrirModalDetalles(id_vehiculo) {
     
     const nivelGas = auto.nivel_combustible !== null ? auto.nivel_combustible : 100;
     const gasColor = nivelGas < 25 ? 'text-danger' : 'text-success';
-    document.getElementById('detalles-gas').innerHTML = `<span class="${gasColor}">${nivelGas}%</span>`;
+    
+    // 🔥 Añadimos el botón del lapicito para poder editar el tanque
+    document.getElementById('detalles-gas').innerHTML = `
+        <span class="${gasColor}">${nivelGas}%</span>
+        <button class="btn btn-sm btn-link p-0 ms-2 text-muted" onclick="editarTanque(${auto.id_vehiculo}, ${auto.capacidad_tanque})" title="Editar Capacidad del Tanque">✏️</button>
+    `;
 
     const estadoLC = auto.estado_actual.toLowerCase();
     let botonesHTML = '';
 
     if (estadoLC === 'activo') {
         botonesHTML += `<button class="btn btn-success fw-bold w-100" onclick="cerrarDetallesYabrir('uso', ${auto.id_vehiculo})">🚗 Registrar Salida</button>`;
+        botonesHTML += `<button class="btn btn-dark fw-bold w-100" onclick="cerrarDetallesYabrir('gasolina', ${auto.id_vehiculo})">⛽ Cargar Combustible</button>`;
         botonesHTML += `<button class="btn btn-danger fw-bold w-100 mt-2" onclick="cerrarDetallesYabrir('evento', ${auto.id_vehiculo})">🔧 Reportar Incidencia</button>`;
     } else if (estadoLC.includes('mantenimiento')) {
         botonesHTML += `<button class="btn btn-warning fw-bold text-dark w-100" onclick="liberarVehiculo(${auto.id_vehiculo})">✅ Liberar del Taller</button>`;
@@ -103,6 +133,7 @@ function cerrarDetallesYabrir(tipoModal, id) {
     }, 400); 
 }
 
+// 🔥 FUNCIONES CON MEMORIA DE DATOS VISUALES
 function abrirModalUso(id) {
     document.getElementById('uso-id-vehiculo').value = id;
     const usr = JSON.parse(localStorage.getItem('usuarioFlota'));
@@ -111,7 +142,8 @@ function abrirModalUso(id) {
     const auto = vehiculosGlobal.find(v => v.id_vehiculo === id);
     if(auto) {
         document.getElementById('uso-gasolina-lectura').value = `${auto.nivel_combustible || 100}%`;
-        document.getElementById('uso-kilometraje').value = auto.kilometraje || 0; 
+        document.getElementById('uso-km-previo').innerText = auto.kilometraje || 0; // Muestra el dato anterior en el texto azul
+        document.getElementById('uso-kilometraje').value = auto.kilometraje || 0;   // Lo escribe en el input
     }
     new bootstrap.Modal(document.getElementById('modal-uso')).show();
 }
@@ -120,6 +152,7 @@ function abrirModalRetorno(id) {
     document.getElementById('retorno-id-vehiculo').value = id;
     const auto = vehiculosGlobal.find(v => v.id_vehiculo === id);
     if(auto) {
+        document.getElementById('retorno-km-previo').innerText = auto.kilometraje || 0; 
         document.getElementById('retorno-km').value = auto.kilometraje || 0; 
     }
     new bootstrap.Modal(document.getElementById('modal-retorno')).show();
@@ -128,7 +161,10 @@ function abrirModalRetorno(id) {
 function abrirModalGasolina(id) { 
     document.getElementById('gasolina-id-vehiculo').value = id; 
     const auto = vehiculosGlobal.find(v => v.id_vehiculo === id);
-    if(auto) document.getElementById('gasolina-km').value = auto.kilometraje || 0; 
+    if(auto) {
+        document.getElementById('gasolina-km-previo').innerText = auto.kilometraje || 0;
+        document.getElementById('gasolina-km').value = auto.kilometraje || 0; 
+    }
     new bootstrap.Modal(document.getElementById('modal-gasolina')).show(); 
 }
 
@@ -170,13 +206,38 @@ async function abrirModalHistorial(id_vehiculo) {
             let colorBadge = actividad.toLowerCase().includes('falla') ? 'bg-danger' : (actividad.toLowerCase().includes('gasolina') ? 'bg-dark' : 'bg-secondary');
             tabla.innerHTML += `<tr><td class="fw-bold text-muted">${fecha}</td><td><span class="badge ${colorBadge}">${actividad}</span></td><td class="small">${detalles}</td></tr>`;
         });
-    } catch (error) { tabla.innerHTML = '<tr><td colspan="3" class="text-danger">Error al cargar historial.</td></tr>'; }
+    } catch (error) { tabla.innerHTML = '<tr><td colspan="3" class="text-danger">Error al cargar historial. Verifica la ruta en el servidor.</td></tr>'; }
 }
 
 async function actualizarDashboard(vehiculos) {
     const ctx = document.getElementById('graficaFlota');
     if (ctx && Chart.getChart(ctx)) Chart.getChart(ctx).destroy(); 
-    if (ctx) new Chart(ctx, { type: 'doughnut', data: { labels: ['Activos', 'En Taller'], datasets: [{ data: [vehiculos.filter(v=>v.estado_actual.toLowerCase()==='activo').length, vehiculos.filter(v=>v.estado_actual.toLowerCase().includes('mantenimiento')).length], backgroundColor: ['#2e8b57', '#d4af37'], borderWidth: 0 }] }, options: { cutout: '60%' }});
+    if (ctx) new Chart(ctx, { 
+        type: 'doughnut', 
+        data: { labels: ['Activos', 'En Taller'], datasets: [{ data: [vehiculos.filter(v=>v.estado_actual.toLowerCase()==='activo').length, vehiculos.filter(v=>v.estado_actual.toLowerCase().includes('mantenimiento')).length], backgroundColor: ['#2e8b57', '#d4af37'], borderWidth: 0 }] }, 
+        options: { responsive: true, maintainAspectRatio: false, cutout: '60%' } // Permite que la gráfica crezca al tamaño del contenedor
+    });
+
+    const ranking = document.getElementById('contenedor-ranking');
+    if (!ranking) return;
+
+    try {
+        const res = await fetch(`${API_URL}/api/eventos`);
+        if (!res.ok) throw new Error("Error API");
+        const eventos = await res.json();
+
+        const conteo = {};
+        eventos.forEach(ev => conteo[ev.id_vehiculo] = (conteo[ev.id_vehiculo] || 0) + 1);
+
+        const topFallas = Object.keys(conteo).map(id => {
+            const auto = vehiculos.find(v => v.id_vehiculo == id);
+            return { nombre: auto ? `${auto.marca} ${auto.modelo}` : `Unidad #${id}`, fallas: conteo[id] };
+        }).sort((a, b) => b.fallas - a.fallas).slice(0, 3);
+
+        ranking.innerHTML = '';
+        if(topFallas.length === 0) ranking.innerHTML = '<p class="text-muted text-center mt-3">No hay historial de fallas.</p>';
+        else topFallas.forEach(item => ranking.innerHTML += `<div class="d-flex justify-content-between align-items-center mb-3 p-2 border-bottom"><span class="fw-bold">${item.nombre}</span><span class="badge bg-danger rounded-pill px-3 py-2">${item.fallas} Fallas</span></div>`);
+    } catch (error) { ranking.innerHTML = '<p class="text-muted text-center">Datos no disponibles.</p>'; }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
