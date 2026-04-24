@@ -23,6 +23,21 @@ async function liberarVehiculo(id_vehiculo) {
     }
 }
 
+async function responderPeticion(id_vehiculo, accion) {
+    if(confirm(`¿Confirmas que deseas ${accion.toUpperCase()} esta solicitud?`)) {
+        try {
+            if(accion === 'Rechazar') {
+                // Si rechaza, el auto vuelve a estar disponible (Activo)
+                await fetch(`${API_URL}/api/vehiculos/${id_vehiculo}/liberar`, { method: 'PUT' });
+            } else {
+                // Si aprueba, el auto se va "En Ruta"
+                await fetch(`${API_URL}/api/vehiculos/${id_vehiculo}/ruta`, { method: 'PUT' });
+            }
+            window.location.reload();
+        } catch(e) { console.error(e); }
+    }
+}
+
 // ==========================================
 // 2. MODALES E HISTORIAL
 // ==========================================
@@ -93,30 +108,41 @@ function renderizarVehiculos(vehiculos) {
     const esChofer = (usuario.rol === 'chofer');
 
     vehiculos.forEach(auto => {
-        const esActivo = auto.estado_actual.toLowerCase() === 'activo';
-        const esMantenimiento = auto.estado_actual.toLowerCase().includes('mantenimiento');
+        const estadoLC = auto.estado_actual.toLowerCase();
+        const esActivo = estadoLC === 'activo';
+        const esMantenimiento = estadoLC.includes('mantenimiento');
+        const esPendiente = estadoLC === 'pendiente';
+        const esRuta = estadoLC.includes('ruta');
         
-        let colorBadge = esActivo ? 'bg-activo' : (esMantenimiento ? 'bg-mantenimiento' : 'bg-primary text-white');
+        let colorBadge = esActivo ? 'bg-activo' : (esMantenimiento ? 'bg-mantenimiento' : (esPendiente ? 'bg-warning text-dark' : 'bg-info text-white'));
         
-        // LÓGICA DE BOTONES SEGÚN EL ROL
+        // LÓGICA DE BOTONES SEGÚN EL ROL Y EL ESTADO
         let botonesHTML = '';
+        
         if (esActivo) {
             botonesHTML += `<button class="btn btn-outline-success w-100 mb-2 fw-bold" style="border-radius: 10px;" onclick="abrirModalUso(${auto.id_vehiculo})">🚗 Registrar Salida</button>`;
-            
-            // Los choferes y admins pueden cargar gasolina
             botonesHTML += `<button class="btn btn-outline-dark w-100 mb-2 fw-bold" style="border-radius: 10px;" onclick="abrirModalGasolina(${auto.id_vehiculo})">⛽ Cargar Combustible</button>`;
-            
-            // Solo los administradores (o mecánicos) pueden reportar incidencias graves
             if (!esChofer) {
                 botonesHTML += `<button class="btn btn-outline-danger w-100 mb-2 fw-bold" style="border-radius: 10px;" onclick="abrirModalEvento(${auto.id_vehiculo})">🔧 Reportar Incidencia</button>`;
             }
-        } else if (esMantenimiento) {
-            // Un chofer no puede liberar un carro del taller
+        } 
+        else if (esMantenimiento) {
             if (!esChofer) {
                 botonesHTML = `<button class="btn w-100 mb-2 fw-bold" style="background-color: #d4af37; color: white; border-radius: 10px;" onclick="liberarVehiculo(${auto.id_vehiculo})">✅ Liberar del Taller</button>`;
             } else {
                 botonesHTML = `<button class="btn btn-secondary w-100 mb-2 fw-bold" disabled>En Taller (Restringido)</button>`;
             }
+        } 
+        else if (esPendiente) {
+            if (!esChofer) { 
+                botonesHTML += `<button class="btn btn-success w-100 mb-2 fw-bold" style="border-radius: 10px;" onclick="responderPeticion(${auto.id_vehiculo}, 'Aprobar')">✅ Aprobar Salida</button>`;
+                botonesHTML += `<button class="btn btn-danger w-100 mb-2 fw-bold" style="border-radius: 10px;" onclick="responderPeticion(${auto.id_vehiculo}, 'Rechazar')">❌ Rechazar</button>`;
+            } else {
+                botonesHTML = `<button class="btn btn-warning w-100 mb-2 fw-bold text-dark" disabled>⏳ Esperando Aprobación</button>`;
+            }
+        } 
+        else if (esRuta) {
+            botonesHTML = `<button class="btn btn-info text-white w-100 mb-2 fw-bold" style="border-radius: 10px;" onclick="alert('Funcionalidad de retorno pendiente')">📍 Registrar Retorno</button>`;
         }
 
         // LÓGICA DE ALERTAS (Seguros y Servicios)
@@ -145,7 +171,9 @@ function renderizarVehiculos(vehiculos) {
                     <h4 class="fw-bold text-primary mb-0">${auto.marca} ${auto.modelo}</h4>
                     <p class="text-muted small mb-3">Año: ${auto.anio}</p>
                     
-                    ${alertasHTML} <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
+                    ${alertasHTML}
+
+                    <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
                         <span class="text-muted fw-bold small">Placa:</span>
                         <span class="badge bg-secondary px-3 py-2" style="border-radius: 8px;">${auto.placa}</span>
                     </div>
@@ -239,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Uso
+    // Uso / Salida
     const formUso = document.getElementById('formulario-uso');
     if(formUso) {
         formUso.addEventListener('submit', async (e) => {
@@ -255,13 +283,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         kilometraje_salida: document.getElementById('uso-kilometraje').value
                     })
                 });
-                alert("Salida registrada con éxito.");
+                alert("Petición de salida registrada. Esperando aprobación.");
                 window.location.reload();
             } catch(error) { console.error(error); }
         });
     }
 
-    // 🔥 Gasolina
+    // Gasolina
     const formGasolina = document.getElementById('formulario-gasolina');
     if(formGasolina) {
         formGasolina.addEventListener('submit', async (e) => {
