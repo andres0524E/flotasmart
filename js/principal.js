@@ -148,6 +148,7 @@ function renderizarVehiculos(vehiculos) {
             botonMecanico = `<div class="v-chofer-actions"><button class="btn-fs btn-fs-warn" onclick="abrirModalLiberar(${auto.id_vehiculo})"><i class="fa-solid fa-check"></i> Liberar del Taller</button></div>`;
         }
 
+        // 🔥 CORRECCIÓN DE DISEÑO: Se eliminó el div class="col-md-4" que aplastaba las tarjetas
         contenedor.innerHTML += `
         <div class="v-card estado-${cls}" ${accionTarjeta} style="animation-delay:${idx * 60}ms">
             <div class="v-card-top">
@@ -388,7 +389,6 @@ async function abrirModalHistorial(id) {
     contenido.innerHTML = html;
 }
 
-// 🔥 SE AGREGA PREPARACIÓN DE DASHBOARD PARA QUE NO SALGA EN BLANCO
 async function actualizarDashboard(vehiculos) {
     const total = vehiculos.length;
     const activos = vehiculos.filter(v => claseEstado(v.estado_actual) === 'activo').length;
@@ -447,7 +447,6 @@ async function actualizarDashboard(vehiculos) {
         </div>`).join('');
 }
 
-// 🔥 EVITAMOS QUE TRUENE SI LA GASOLINA ESTÁ VACÍA (Por si tarda el deploy)
 async function cargarFinanciero() {
     const [gasolinaData, eventosData] = await Promise.all([
         apiFetch('/api/gasolina').catch(() => []), 
@@ -514,13 +513,12 @@ async function cargarFinanciero() {
     </table>`;
 }
 
-// 🔥 INCLUIMOS ACTUALIZAR DASHBOARD DIRECTO AL CARGAR
 async function cargarVehiculos() {
     const data = await apiFetch('/api/vehiculos');
     if (data) {
         vehiculosGlobal = data;
         renderizarVehiculos(vehiculosGlobal);
-        actualizarDashboard(vehiculosGlobal); // Prepara la gráfica silenciosamente
+        actualizarDashboard(vehiculosGlobal);
     }
 }
 
