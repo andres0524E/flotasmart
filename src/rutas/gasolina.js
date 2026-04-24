@@ -2,7 +2,7 @@ const express = require('express');
 const enrutador = express.Router();
 const bd = require('../bd/conexion');
 
-// 🔥 NUEVA RUTA GET (Esta es la que faltaba para que funcione el módulo financiero)
+// 🔥 1. LEER TODOS LOS TICKETS (Para sumar en la pestaña Financiero)
 enrutador.get('/', (req, res) => {
     const consulta = 'SELECT * FROM registros_gasolina';
     bd.query(consulta, (error, resultados) => {
@@ -11,7 +11,7 @@ enrutador.get('/', (req, res) => {
     });
 });
 
-// Ruta para registrar carga de gasolina (POST)
+// 2. GUARDAR UN NUEVO TICKET
 enrutador.post('/', (req, res) => {
     const { id_vehiculo, litros, costo_total, kilometraje } = req.body;
     
