@@ -2,7 +2,16 @@ const express = require('express');
 const enrutador = express.Router();
 const bd = require('../bd/conexion');
 
-// Ruta para registrar carga de gasolina
+// 🔥 NUEVA RUTA GET (Esta es la que faltaba para que funcione el módulo financiero)
+enrutador.get('/', (req, res) => {
+    const consulta = 'SELECT * FROM registros_gasolina';
+    bd.query(consulta, (error, resultados) => {
+        if (error) return res.status(500).json({ error: 'Error al obtener registros de gasolina' });
+        res.json(resultados);
+    });
+});
+
+// Ruta para registrar carga de gasolina (POST)
 enrutador.post('/', (req, res) => {
     const { id_vehiculo, litros, costo_total, kilometraje } = req.body;
     

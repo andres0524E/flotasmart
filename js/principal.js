@@ -58,7 +58,6 @@ function badgeHTML(estado) {
     return `<span class="v-badge badge-${cls}">${sanitizar(estado)}</span>`;
 }
 
-// 🔥 BUG DE "fecha_seguro" CORREGIDO AQUÍ
 function alertasVehiculo(auto) {
     let html = '';
     const hoy = new Date();
@@ -118,7 +117,6 @@ function renderizarVehiculos(vehiculos) {
         let alertaChip = '';
         const hoy = new Date(); hoy.setHours(0,0,0,0);
         
-        // 🔥 BUG DE "fecha_seguro" CORREGIDO AQUÍ TAMBIÉN
         if (auto.fecha_seguro) {
             const v = new Date(auto.fecha_seguro); v.setHours(0,0,0,0);
             const d = Math.round((v - hoy) / 86400000);
@@ -390,6 +388,7 @@ async function abrirModalHistorial(id) {
     contenido.innerHTML = html;
 }
 
+// 🔥 SE AGREGA PREPARACIÓN DE DASHBOARD PARA QUE NO SALGA EN BLANCO
 async function actualizarDashboard(vehiculos) {
     const total = vehiculos.length;
     const activos = vehiculos.filter(v => claseEstado(v.estado_actual) === 'activo').length;
@@ -448,10 +447,11 @@ async function actualizarDashboard(vehiculos) {
         </div>`).join('');
 }
 
+// 🔥 EVITAMOS QUE TRUENE SI LA GASOLINA ESTÁ VACÍA (Por si tarda el deploy)
 async function cargarFinanciero() {
     const [gasolinaData, eventosData] = await Promise.all([
-        apiFetch('/api/gasolina'),
-        apiFetch('/api/eventos')
+        apiFetch('/api/gasolina').catch(() => []), 
+        apiFetch('/api/eventos').catch(() => [])
     ]);
 
     let totalGas = 0, totalLitros = 0;
@@ -514,11 +514,13 @@ async function cargarFinanciero() {
     </table>`;
 }
 
+// 🔥 INCLUIMOS ACTUALIZAR DASHBOARD DIRECTO AL CARGAR
 async function cargarVehiculos() {
     const data = await apiFetch('/api/vehiculos');
     if (data) {
         vehiculosGlobal = data;
         renderizarVehiculos(vehiculosGlobal);
+        actualizarDashboard(vehiculosGlobal); // Prepara la gráfica silenciosamente
     }
 }
 
@@ -550,7 +552,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cargarVehiculos();
 
-    // 🔥 BUG DE "fecha_seguro" CORREGIDO AQUÍ 
     document.getElementById('formulario-vehiculo')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const placa = sanitizar(document.getElementById('input-placa').value);
@@ -639,13 +640,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const desc = sanitizar(document.getElementById('evento-descripcion').value);
         const costo = parseFloat(document.getElementById('evento-costo').value) || 0;
         if (!desc) { Swal.fire({ icon:'warning', title:'Ingresa una descripción', ...SWAL_DARK }); return; }
-        await apiFetch('/api/eventos', {
+        
+        const resEvento = await apiFetch('/api/eventos', {
             method: 'POST', headers: {'Content-Type':'application/json'},
             body: JSON.stringify({ id_vehiculo: id, tipo_evento: tipo, descripcion: causa + ' — ' + desc, costo })
         });
-        await apiFetch(`/api/vehiculos/${id}/mantenimiento`, { method: 'PUT' });
-        bootstrap.Modal.getInstance(document.getElementById('modal-evento'))?.hide();
-        Swal.fire({ icon:'success', title:'¡Reportado!', text:'Unidad enviada al taller.', ...SWAL_DARK }).then(() => cargarVehiculos());
+        
+        if (resEvento !== null) {
+            await apiFetch(`/api/vehiculos/${id}/mantenimiento`, { method: 'PUT' });
+            bootstrap.Modal.getInstance(document.getElementById('modal-evento'))?.hide();
+            Swal.fire({ icon:'success', title:'¡Reportado!', text:'Unidad enviada al taller.', ...SWAL_DARK }).then(() => cargarVehiculos());
+        } else {
+             Swal.fire({ icon:'error', title:'Error en el servidor', ...SWAL_DARK });
+        }
     });
 
     document.getElementById('formulario-liberar')?.addEventListener('submit', async (e) => {
