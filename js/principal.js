@@ -14,28 +14,54 @@ async function cargarVehiculos() {
 }
 
 async function liberarVehiculo(id_vehiculo) {
-    if (confirm("¿Confirmas la liberación del vehículo?")) {
-        try {
-            const res = await fetch(`${API_URL}/api/vehiculos/${id_vehiculo}/liberar`, { method: 'PUT' });
-            if (res.ok) window.location.reload(); 
-            else alert('❌ Error al liberar.');
-        } catch (error) { console.error(error); }
-    }
+    // 🔥 NUEVA ALERTA BONITA (Reemplaza al confirm)
+    Swal.fire({
+        title: '¿Liberar vehículo?',
+        text: "El auto pasará a estar 'Activo' y listo para usarse.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#d4af37',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sí, liberar',
+        cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const res = await fetch(`${API_URL}/api/vehiculos/${id_vehiculo}/liberar`, { method: 'PUT' });
+                if (res.ok) {
+                    Swal.fire('¡Liberado!', 'El vehículo está activo.', 'success').then(() => window.location.reload());
+                } else {
+                    Swal.fire('Error', 'No se pudo liberar el vehículo.', 'error');
+                }
+            } catch (error) { console.error(error); }
+        }
+    });
 }
 
 async function responderPeticion(id_vehiculo, accion) {
-    if(confirm(`¿Confirmas que deseas ${accion.toUpperCase()} esta solicitud?`)) {
-        try {
-            if(accion === 'Rechazar') {
-                // Si rechaza, el auto vuelve a estar disponible (Activo)
-                await fetch(`${API_URL}/api/vehiculos/${id_vehiculo}/liberar`, { method: 'PUT' });
-            } else {
-                // Si aprueba, el auto se va "En Ruta"
-                await fetch(`${API_URL}/api/vehiculos/${id_vehiculo}/ruta`, { method: 'PUT' });
-            }
-            window.location.reload();
-        } catch(e) { console.error(e); }
-    }
+    // 🔥 NUEVA ALERTA DE CONFIRMACIÓN BONITA
+    const esAprobar = accion === 'Aprobar';
+    Swal.fire({
+        title: `¿${accion.toUpperCase()} solicitud?`,
+        text: esAprobar ? "El vehículo pasará a estar 'En Ruta'." : "La solicitud será cancelada y el auto volverá a estar 'Activo'.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: esAprobar ? '#198754' : '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: `Sí, ${accion}`,
+        cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                if(accion === 'Rechazar') {
+                    await fetch(`${API_URL}/api/vehiculos/${id_vehiculo}/liberar`, { method: 'PUT' });
+                } else {
+                    await fetch(`${API_URL}/api/vehiculos/${id_vehiculo}/ruta`, { method: 'PUT' });
+                }
+                Swal.fire('¡Hecho!', `La petición ha sido ${accion.toLowerCase()}da.`, 'success').then(() => window.location.reload());
+            } catch(e) { Swal.fire('Error', 'Hubo un problema de conexión', 'error'); }
+        }
+    });
 }
 
 // ==========================================
@@ -103,7 +129,6 @@ function renderizarVehiculos(vehiculos) {
     if (!contenedor) return; 
     contenedor.innerHTML = ''; 
 
-    // OBTENEMOS EL ROL DEL USUARIO
     const usuario = JSON.parse(localStorage.getItem('usuarioFlota')) || { rol: 'admin' };
     const esChofer = (usuario.rol === 'chofer');
 
@@ -116,7 +141,6 @@ function renderizarVehiculos(vehiculos) {
         
         let colorBadge = esActivo ? 'bg-activo' : (esMantenimiento ? 'bg-mantenimiento' : (esPendiente ? 'bg-warning text-dark' : 'bg-info text-white'));
         
-        // LÓGICA DE BOTONES SEGÚN EL ROL Y EL ESTADO
         let botonesHTML = '';
         
         if (esActivo) {
@@ -142,10 +166,10 @@ function renderizarVehiculos(vehiculos) {
             }
         } 
         else if (esRuta) {
-            botonesHTML = `<button class="btn btn-info text-white w-100 mb-2 fw-bold" style="border-radius: 10px;" onclick="alert('Funcionalidad de retorno pendiente')">📍 Registrar Retorno</button>`;
+            // 🔥 BOTÓN DE RETORNO CON ALERTA BONITA TEMPORAL
+            botonesHTML = `<button class="btn btn-info text-white w-100 mb-2 fw-bold" style="border-radius: 10px;" onclick="Swal.fire('¡Próximamente!', 'La función de retorno está en desarrollo.', 'info')">📍 Registrar Retorno</button>`;
         }
 
-        // LÓGICA DE ALERTAS (Seguros y Servicios)
         let alertasHTML = '';
         const hoy = new Date();
         
@@ -228,7 +252,7 @@ async function actualizarDashboard(vehiculos) {
 }
 
 // ==========================================
-// 4. CAPTURA DE FORMULARIOS
+// 4. CAPTURA DE FORMULARIOS (Con alertas bonitas)
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     const usuario = JSON.parse(localStorage.getItem('usuarioFlota'));
@@ -237,7 +261,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const navUsuario = document.getElementById('nav-usuario-rol');
     if(navUsuario) navUsuario.textContent = `Hola, ${usuario.nombre || 'Usuario'} (${usuario.rol || 'admin'})`;
     
-    // Ocultar botón "Registrar Unidad" si es chofer
     if(usuario.rol === 'chofer' && document.getElementById('btn-registrar-unidad')) {
         document.getElementById('btn-registrar-unidad').style.display = 'none';
     }
@@ -262,8 +285,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                 });
                 await fetch(`${API_URL}/api/vehiculos/${id_vehiculo}/mantenimiento`, { method: 'PUT' });
-                window.location.reload(); 
-            } catch(error) { alert("Error al reportar"); }
+                
+                // 🔥 ALERTA DE ÉXITO BONITA
+                Swal.fire('¡Reportado!', 'El vehículo ha sido enviado al taller.', 'success').then(() => window.location.reload());
+            } catch(error) { Swal.fire('Error', 'No se pudo reportar la incidencia.', 'error'); }
         });
     }
 
@@ -283,9 +308,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         kilometraje_salida: document.getElementById('uso-kilometraje').value
                     })
                 });
-                alert("Petición de salida registrada. Esperando aprobación.");
-                window.location.reload();
-            } catch(error) { console.error(error); }
+                Swal.fire('¡Solicitud Enviada!', 'La petición de salida está esperando aprobación.', 'success').then(() => window.location.reload());
+            } catch(error) { Swal.fire('Error', 'No se pudo registrar la salida.', 'error'); }
         });
     }
 
@@ -305,9 +329,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         kilometraje: document.getElementById('gasolina-km').value
                     })
                 });
-                alert("⛽ Carga de combustible registrada exitosamente.");
-                window.location.reload();
-            } catch(error) { console.error(error); alert("Error al guardar combustible."); }
+                Swal.fire('¡Ticket Guardado!', '⛽ Carga de combustible registrada exitosamente.', 'success').then(() => window.location.reload());
+            } catch(error) { Swal.fire('Error', 'No se pudo guardar el combustible.', 'error'); }
         });
     }
 });
