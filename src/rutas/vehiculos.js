@@ -55,4 +55,17 @@ enrutador.put('/:id/ruta', (req, res) => {
     });
 });
 
+// 6. Registrar Retorno del Vehículo (Actualiza KM y Gasolina)
+enrutador.put('/:id/retorno', (req, res) => {
+    const { id } = req.params;
+    const { kilometraje, nivel_combustible } = req.body;
+    
+    const consulta = "UPDATE vehiculos SET estado_actual = 'Activo', kilometraje = ?, nivel_combustible = ? WHERE id_vehiculo = ?";
+    
+    bd.query(consulta, [kilometraje, nivel_combustible, id], (error, resultados) => {
+        if (error) return res.status(500).json({ error: 'Error al registrar retorno' });
+        res.json({ mensaje: 'Vehículo retornado exitosamente' });
+    });
+});
+
 module.exports = enrutador;
