@@ -1,5 +1,5 @@
 const API_URL = 'https://flotasmart-backend.onrender.com';
-let vehiculosGlobal = []; // Necesitamos guardar los vehículos para leerlos cuando abran el Modal
+let vehiculosGlobal = []; 
 
 async function cargarVehiculos() {
     try {
@@ -10,9 +10,6 @@ async function cargarVehiculos() {
     } catch (error) { console.error("Error al cargar:", error); }
 }
 
-// ==========================================
-// RENDERIZADO LIMPIO DE TARJETAS
-// ==========================================
 function renderizarVehiculos(vehiculos) {
     const contenedor = document.getElementById('contenedor-vehiculos');
     if (!contenedor) return; 
@@ -25,16 +22,19 @@ function renderizarVehiculos(vehiculos) {
         const estadoLC = auto.estado_actual.toLowerCase();
         let colorBadge = estadoLC === 'activo' ? 'bg-success' : (estadoLC.includes('mantenimiento') ? 'bg-warning text-dark' : (estadoLC === 'pendiente' ? 'bg-secondary' : 'bg-info text-white'));
         
-        // Configuración de la tarjeta (Admin = clic abre detalles / Chofer = sin clic)
         let accionTarjeta = esChofer ? '' : `onclick="abrirModalDetalles(${auto.id_vehiculo})"`;
         let claseHover = esChofer ? 'tarjeta-chofer' : 'tarjeta-vehiculo';
 
-        // Botón directo para la vista de Chofer
         let botonChofer = '';
         if (esChofer && estadoLC === 'activo') {
-            botonChofer = `<button class="btn btn-outline-success w-100 mt-3 fw-bold" onclick="abrirModalUso(${auto.id_vehiculo})">🚗 Solicitar Unidad</button>`;
+            botonChofer = `
+                <button class="btn btn-outline-success w-100 mt-3 fw-bold" onclick="abrirModalUso(${auto.id_vehiculo})">🚗 Solicitar Unidad</button>
+                <button class="btn btn-outline-dark w-100 mt-2 fw-bold" onclick="abrirModalGasolina(${auto.id_vehiculo})">⛽ Cargar Combustible</button>
+            `;
         } else if (esChofer && estadoLC === 'pendiente') {
             botonChofer = `<button class="btn btn-warning w-100 mt-3 fw-bold text-dark" disabled>⏳ Esperando Aprobación</button>`;
+        } else if (esChofer && estadoLC.includes('ruta')) {
+            botonChofer = `<button class="btn btn-info text-white w-100 mt-3 fw-bold" onclick="abrirModalRetorno(${auto.id_vehiculo})">📍 Registrar Retorno</button>`;
         }
 
         contenedor.innerHTML += `
@@ -51,21 +51,17 @@ function renderizarVehiculos(vehiculos) {
                         <span class="badge ${colorBadge} px-3 py-2 text-capitalize">${auto.estado_actual}</span>
                     </div>
                     ${botonChofer}
-                    ${!esChofer ? `<p class="text-center text-muted small mt-3 mb-0">👉 Clic para ver opciones</p>` : ''}
+                    ${!esChofer ? `<p class="text-center text-muted small mt-3 mb-0">👉 Clic para opciones (Admin)</p>` : ''}
                 </div>
             </div>
         `;
     });
 }
 
-// ==========================================
-// MODAL DE DETALLES MAESTRO (Para Admin)
-// ==========================================
 function abrirModalDetalles(id_vehiculo) {
     const auto = vehiculosGlobal.find(v => v.id_vehiculo === id_vehiculo);
     if(!auto) return;
 
-    // Poblar textos
     document.getElementById('detalles-titulo').innerText = `${auto.marca} ${auto.modelo}`;
     document.getElementById('detalles-placa').innerText = auto.placa;
     document.getElementById('detalles-km').innerText = `${auto.kilometraje || 0} km`;
@@ -79,15 +75,13 @@ function abrirModalDetalles(id_vehiculo) {
 
     if (estadoLC === 'activo') {
         botonesHTML += `<button class="btn btn-success fw-bold w-100" onclick="cerrarDetallesYabrir('uso', ${auto.id_vehiculo})">🚗 Registrar Salida</button>`;
-        botonesHTML += `<button class="btn btn-dark fw-bold w-100" onclick="cerrarDetallesYabrir('gasolina', ${auto.id_vehiculo})">⛽ Cargar Combustible</button>`;
-        botonesHTML += `<button class="btn btn-danger fw-bold w-100" onclick="cerrarDetallesYabrir('evento', ${auto.id_vehiculo})">🔧 Reportar Incidencia</button>`;
+        botonesHTML += `<button class="btn btn-danger fw-bold w-100 mt-2" onclick="cerrarDetallesYabrir('evento', ${auto.id_vehiculo})">🔧 Reportar Incidencia</button>`;
     } else if (estadoLC.includes('mantenimiento')) {
         botonesHTML += `<button class="btn btn-warning fw-bold text-dark w-100" onclick="liberarVehiculo(${auto.id_vehiculo})">✅ Liberar del Taller</button>`;
     } else if (estadoLC === 'pendiente') {
         botonesHTML += `<button class="btn btn-success fw-bold w-100" onclick="responderPeticion(${auto.id_vehiculo}, 'Aprobar')">✅ Aprobar Salida</button>`;
-        botonesHTML += `<button class="btn btn-danger fw-bold w-100" onclick="responderPeticion(${auto.id_vehiculo}, 'Rechazar')">❌ Rechazar</button>`;
+        botonesHTML += `<button class="btn btn-danger fw-bold w-100 mt-2" onclick="responderPeticion(${auto.id_vehiculo}, 'Rechazar')">❌ Rechazar</button>`;
     } else if (estadoLC.includes('ruta')) {
-        // Botón de Retorno
         botonesHTML += `<button class="btn btn-info text-white fw-bold w-100" onclick="cerrarDetallesYabrir('retorno', ${auto.id_vehiculo})">📍 Registrar Retorno</button>`;
     }
 
@@ -109,9 +103,6 @@ function cerrarDetallesYabrir(tipoModal, id) {
     }, 400); 
 }
 
-// ==========================================
-// FUNCIONES DE MODALES ESPECÍFICOS
-// ==========================================
 function abrirModalUso(id) {
     document.getElementById('uso-id-vehiculo').value = id;
     const usr = JSON.parse(localStorage.getItem('usuarioFlota'));
@@ -120,7 +111,7 @@ function abrirModalUso(id) {
     const auto = vehiculosGlobal.find(v => v.id_vehiculo === id);
     if(auto) {
         document.getElementById('uso-gasolina-lectura').value = `${auto.nivel_combustible || 100}%`;
-        document.getElementById('uso-kilometraje').value = auto.kilometraje || 0;
+        document.getElementById('uso-kilometraje').value = auto.kilometraje || 0; 
     }
     new bootstrap.Modal(document.getElementById('modal-uso')).show();
 }
@@ -129,18 +120,20 @@ function abrirModalRetorno(id) {
     document.getElementById('retorno-id-vehiculo').value = id;
     const auto = vehiculosGlobal.find(v => v.id_vehiculo === id);
     if(auto) {
-        document.getElementById('retorno-km').value = auto.kilometraje || '';
-        document.getElementById('retorno-gas').value = auto.nivel_combustible || '';
+        document.getElementById('retorno-km').value = auto.kilometraje || 0; 
     }
     new bootstrap.Modal(document.getElementById('modal-retorno')).show();
 }
 
-function abrirModalGasolina(id) { document.getElementById('gasolina-id-vehiculo').value = id; new bootstrap.Modal(document.getElementById('modal-gasolina')).show(); }
+function abrirModalGasolina(id) { 
+    document.getElementById('gasolina-id-vehiculo').value = id; 
+    const auto = vehiculosGlobal.find(v => v.id_vehiculo === id);
+    if(auto) document.getElementById('gasolina-km').value = auto.kilometraje || 0; 
+    new bootstrap.Modal(document.getElementById('modal-gasolina')).show(); 
+}
+
 function abrirModalEvento(id) { document.getElementById('evento-id-vehiculo').value = id; new bootstrap.Modal(document.getElementById('modal-evento')).show(); }
 
-// ==========================================
-// ACCIONES Y API
-// ==========================================
 async function liberarVehiculo(id) {
     Swal.fire({ title: '¿Liberar?', icon: 'question', showCancelButton: true, confirmButtonText: 'Sí' }).then(async (res) => {
         if (res.isConfirmed) {
@@ -172,12 +165,12 @@ async function abrirModalHistorial(id_vehiculo) {
 
         historial.forEach(item => {
             let fecha = item.fecha ? new Date(item.fecha).toLocaleDateString() : '';
-            let actividad = item.actividad || item.tipo_evento || item.proposito || 'Registro';
-            let detalles = item.detalles || item.descripcion || 'Sin detalles';
-            let colorBadge = actividad.toLowerCase().includes('falla') ? 'bg-danger' : (actividad.toLowerCase().includes('retorno') ? 'bg-info' : 'bg-secondary');
+            let actividad = item.actividad || 'Registro';
+            let detalles = item.detalles || 'Sin detalles';
+            let colorBadge = actividad.toLowerCase().includes('falla') ? 'bg-danger' : (actividad.toLowerCase().includes('gasolina') ? 'bg-dark' : 'bg-secondary');
             tabla.innerHTML += `<tr><td class="fw-bold text-muted">${fecha}</td><td><span class="badge ${colorBadge}">${actividad}</span></td><td class="small">${detalles}</td></tr>`;
         });
-    } catch (error) { tabla.innerHTML = '<tr><td colspan="3" class="text-danger">Error</td></tr>'; }
+    } catch (error) { tabla.innerHTML = '<tr><td colspan="3" class="text-danger">Error al cargar historial.</td></tr>'; }
 }
 
 async function actualizarDashboard(vehiculos) {
@@ -195,6 +188,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cargarVehiculos();
 
+    const formVehiculo = document.getElementById('formulario-vehiculo');
+    if(formVehiculo) {
+        formVehiculo.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await fetch(`${API_URL}/api/vehiculos`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ placa: document.getElementById('input-placa').value, marca: document.getElementById('input-marca').value, modelo: document.getElementById('input-modelo').value, anio: document.getElementById('input-anio').value, capacidad_tanque: document.getElementById('input-tanque').value })
+                });
+                Swal.fire('¡Guardado!', 'Vehículo registrado.', 'success').then(()=>window.location.reload());
+            } catch(e) {}
+        });
+    }
+
     const formRetorno = document.getElementById('formulario-retorno');
     if(formRetorno) formRetorno.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -203,8 +210,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'PUT', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ kilometraje: document.getElementById('retorno-km').value, nivel_combustible: document.getElementById('retorno-gas').value })
             });
-            Swal.fire('¡Viaje Finalizado!', 'El vehículo ha sido devuelto.', 'success').then(()=>window.location.reload());
-        } catch(e) { Swal.fire('Error', 'Fallo', 'error'); }
+            Swal.fire('¡Viaje Finalizado!', 'Kilometraje y gasolina actualizados.', 'success').then(()=>window.location.reload());
+        } catch(e) {}
     });
 
     const formUso = document.getElementById('formulario-uso');
@@ -216,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ id_vehiculo: document.getElementById('uso-id-vehiculo').value, id_usuario: document.getElementById('uso-id-usuario').value, proposito: document.getElementById('uso-proposito').value, kilometraje_salida: document.getElementById('uso-kilometraje').value })
             });
             Swal.fire('¡Enviado!', 'Petición enviada al administrador.', 'success').then(()=>window.location.reload());
-        } catch(e) { Swal.fire('Error', 'Fallo', 'error'); }
+        } catch(e) {}
     });
 
     const formGas = document.getElementById('formulario-gasolina');
@@ -225,10 +232,10 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             await fetch(`${API_URL}/api/gasolina`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id_vehiculo: document.getElementById('gasolina-id-vehiculo').value, litros: document.getElementById('gasolina-litros').value, costo_total: document.getElementById('gasolina-costo').value, kilometraje: 0 }) 
+                body: JSON.stringify({ id_vehiculo: document.getElementById('gasolina-id-vehiculo').value, litros: document.getElementById('gasolina-litros').value, costo_total: document.getElementById('gasolina-costo').value, kilometraje: document.getElementById('gasolina-km').value }) 
             });
             Swal.fire('¡Guardado!', 'Combustible registrado.', 'success').then(()=>window.location.reload());
-        } catch(e) { Swal.fire('Error', 'Fallo', 'error'); }
+        } catch(e) {}
     });
 
     const formEv = document.getElementById('formulario-evento');
@@ -239,6 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
             await fetch(`${API_URL}/api/eventos`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id_vehiculo: id, tipo_evento: document.getElementById('evento-tipo').value, descripcion: document.getElementById('evento-causa').value + ' - ' + document.getElementById('evento-descripcion').value, costo: document.getElementById('evento-costo').value }) });
             await fetch(`${API_URL}/api/vehiculos/${id}/mantenimiento`, { method: 'PUT' });
             Swal.fire('¡Reportado!', 'Enviado al taller.', 'success').then(()=>window.location.reload());
-        } catch(e) { Swal.fire('Error', 'Fallo', 'error'); }
+        } catch(e) {}
     });
 });
