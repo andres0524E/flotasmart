@@ -2,6 +2,8 @@
 
 const API_URL = 'https://flotasmart-backend.onrender.com';
 let vehiculosGlobal = [];
+let gasDataGlobal = [];
+let evtDataGlobal = [];
 let filtroActivo = 'todos';
 
 function verificarSesion() {
@@ -104,7 +106,7 @@ function renderizarVehiculos(vehiculos) {
     if (lista.length === 0) {
         contenedor.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)">
             <div style="font-size:48px;margin-bottom:12px"><i class="fa-solid fa-car-side"></i></div>
-            <div style="font-family:'Syne',sans-serif;font-size:16px">No hay vehículos que mostrar</div>
+            <div style="font-family:'Montserrat',sans-serif;font-size:16px">No hay vehículos que mostrar</div>
         </div>`;
         return;
     }
@@ -148,7 +150,6 @@ function renderizarVehiculos(vehiculos) {
             botonMecanico = `<div class="v-chofer-actions"><button class="btn-fs btn-fs-warn" onclick="abrirModalLiberar(${auto.id_vehiculo})"><i class="fa-solid fa-check"></i> Liberar del Taller</button></div>`;
         }
 
-        // 🔥 CORRECCIÓN DE DISEÑO: Se eliminó el div class="col-md-4" que aplastaba las tarjetas
         contenedor.innerHTML += `
         <div class="v-card estado-${cls}" ${accionTarjeta} style="animation-delay:${idx * 60}ms">
             <div class="v-card-top">
@@ -447,70 +448,152 @@ async function actualizarDashboard(vehiculos) {
         </div>`).join('');
 }
 
+// 🔥 SE AGREGA LÓGICA DE ESTADO_PAGO Y MODAL DE DEUDAS
 async function cargarFinanciero() {
-    const [gasolinaData, eventosData] = await Promise.all([
-        apiFetch('/api/gasolina').catch(() => []), 
-        apiFetch('/api/eventos').catch(() => [])
-    ]);
+    gasDataGlobal = await apiFetch('/api/gasolina').catch(() => []);
+    evtDataGlobal = await apiFetch('/api/eventos').catch(() => []);
 
-    let totalGas = 0, totalLitros = 0;
-    if (gasolinaData && Array.isArray(gasolinaData)) {
-        gasolinaData.forEach(r => {
-            totalGas += parseFloat(r.costo_total || 0);
-            totalLitros += parseFloat(r.litros || 0);
-        });
-    }
-
-    let totalRep = 0;
-    if (eventosData && Array.isArray(eventosData)) {
-        eventosData.forEach(r => { totalRep += parseFloat(r.costo || 0); });
-    }
-
-    const totalGeneral = totalGas + totalRep;
-    const fmt = (n) => `$${n.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
-    document.getElementById('fin-gasolina').textContent = fmt(totalGas);
-    document.getElementById('fin-gasolina-litros').textContent = `${totalLitros.toFixed(1)} litros registrados`;
-    document.getElementById('fin-reparaciones').textContent = fmt(totalRep);
-    document.getElementById('fin-rep-eventos').textContent = `${eventosData?.length || 0} eventos registrados`;
-    document.getElementById('fin-total').textContent = fmt(totalGeneral);
-
-    const tablaDiv = document.getElementById('fin-detalle-tabla');
-    if (!vehiculosGlobal.length) { tablaDiv.innerHTML = '<p style="color:var(--muted);text-align:center">Sin datos.</p>'; return; }
+    let totalPagado = 0, totalPendiente = 0, totalHistorico = 0;
 
     const gasxVeh = {};
     const repxVeh = {};
-    if (gasolinaData) gasolinaData.forEach(r => { gasxVeh[r.id_vehiculo] = (gasxVeh[r.id_vehiculo] || 0) + parseFloat(r.costo_total || 0); });
-    if (eventosData) eventosData.forEach(r => { repxVeh[r.id_vehiculo] = (repxVeh[r.id_vehiculo] || 0) + parseFloat(r.costo || 0); });
+
+    if (gasDataGlobal && Array.isArray(gasDataGlobal)) {
+        gasDataGlobal.forEach(r => {
+            const costo = parseFloat(r.costo_total || 0);
+            totalHistorico += costo;
+            
+            if (!gasxVeh[r.id_vehiculo]) gasxVeh[r.id_vehiculo] = { pagado: 0, pendiente: 0 };
+            
+            if (r.estado_pago === 'Pagado') {
+                totalPagado += costo;
+                gasxVeh[r.id_vehiculo].pagado += costo;
+            } else {
+                totalPendiente += costo;
+                gasxVeh[r.id_vehiculo].pendiente += costo;
+            }
+        });
+    }
+
+    if (evtDataGlobal && Array.isArray(evtDataGlobal)) {
+        evtDataGlobal.forEach(r => { 
+            const costo = parseFloat(r.costo || 0);
+            totalHistorico += costo;
+
+            if (!repxVeh[r.id_vehiculo]) repxVeh[r.id_vehiculo] = { pagado: 0, pendiente: 0 };
+
+            if (r.estado_pago === 'Pagado') {
+                totalPagado += costo;
+                repxVeh[r.id_vehiculo].pagado += costo;
+            } else {
+                totalPendiente += costo;
+                repxVeh[r.id_vehiculo].pendiente += costo;
+            }
+        });
+    }
+
+    const fmt = (n) => `$${n.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+    document.getElementById('fin-historico').textContent = fmt(totalHistorico);
+    document.getElementById('fin-pagado').textContent = fmt(totalPagado);
+    document.getElementById('fin-pendiente').textContent = fmt(totalPendiente);
+
+    const tablaDiv = document.getElementById('fin-detalle-tabla');
+    if (!vehiculosGlobal.length) { tablaDiv.innerHTML = '<p style="color:var(--muted);text-align:center">Sin datos.</p>'; return; }
 
     const todos = [...new Set([...Object.keys(gasxVeh), ...Object.keys(repxVeh)])];
     if (todos.length === 0) { tablaDiv.innerHTML = '<p style="color:var(--muted);text-align:center">Sin movimientos financieros aún.</p>'; return; }
 
     let rows = todos.map(id => {
         const auto = vehiculosGlobal.find(v => v.id_vehiculo == id);
-        const g = gasxVeh[id] || 0;
-        const rep = repxVeh[id] || 0;
-        return { nombre: auto ? `${auto.marca} ${auto.modelo}` : `#${id}`, placa: auto?.placa || '—', gas: g, rep, total: g + rep };
-    }).sort((a, b) => b.total - a.total);
+        const g = gasxVeh[id] || {pagado:0, pendiente:0};
+        const rep = repxVeh[id] || {pagado:0, pendiente:0};
+        return { 
+            id_vehiculo: id,
+            nombre: auto ? `${auto.marca} ${auto.modelo}` : `#${id}`, 
+            placa: auto?.placa || '—', 
+            pagado: g.pagado + rep.pagado, 
+            pendiente: g.pendiente + rep.pendiente 
+        };
+    }).sort((a, b) => b.pendiente - a.pendiente); // Ordenar por los que deben más
 
     tablaDiv.innerHTML = `
     <table class="fin-table">
         <thead><tr>
             <th>Vehículo</th><th>Placa</th>
-            <th style="text-align:right"><i class="fa-solid fa-gas-pump"></i> Combustible</th>
-            <th style="text-align:right"><i class="fa-solid fa-wrench"></i> Reparaciones</th>
-            <th style="text-align:right">Total</th>
+            <th style="text-align:right">Total Pagado</th>
+            <th style="text-align:right;color:var(--danger)">Deuda Pendiente</th>
+            <th style="text-align:center">Acciones</th>
         </tr></thead>
         <tbody>
         ${rows.map(r => `<tr>
             <td><strong>${sanitizar(r.nombre)}</strong></td>
             <td style="color:var(--muted);font-size:12px">${sanitizar(r.placa)}</td>
-            <td style="text-align:right;color:var(--accent)">${fmt(r.gas)}</td>
-            <td style="text-align:right;color:var(--danger)">${fmt(r.rep)}</td>
-            <td style="text-align:right;font-family:'Syne',sans-serif;font-weight:700">${fmt(r.total)}</td>
+            <td style="text-align:right;color:var(--success);font-weight:600">${fmt(r.pagado)}</td>
+            <td style="text-align:right;color:var(--danger);font-weight:600">${fmt(r.pendiente)}</td>
+            <td style="text-align:center">
+                <button class="btn-fs btn-small btn-fs-primary" onclick="abrirModalDeudas(${r.id_vehiculo})">Ver Cuentas</button>
+            </td>
         </tr>`).join('')}
         </tbody>
     </table>`;
+}
+
+// 🔥 NUEVA FUNCIÓN: Mostrar detalles de deuda y botón para pagar
+window.abrirModalDeudas = function(id_vehiculo) {
+    const auto = vehiculosGlobal.find(v => v.id_vehiculo == id_vehiculo);
+    const deudasGas = gasDataGlobal.filter(g => g.id_vehiculo == id_vehiculo && g.estado_pago !== 'Pagado');
+    const deudasRep = evtDataGlobal.filter(e => e.id_vehiculo == id_vehiculo && e.estado_pago !== 'Pagado' && parseFloat(e.costo) > 0);
+
+    let html = `<h6 style="color:var(--muted);margin-bottom:16px">Unidad: ${sanitizar(auto?.placa)}</h6>`;
+
+    if (deudasGas.length === 0 && deudasRep.length === 0) {
+        html += `<p style="text-align:center;color:var(--success);margin-top:20px;font-weight:600"><i class="fa-solid fa-circle-check"></i> Sin cuentas pendientes por pagar.</p>`;
+    } else {
+        deudasGas.forEach(g => {
+            html += `<div class="rank-item" style="gap:12px; align-items:center">
+                <div>
+                    <div class="rank-name"><i class="fa-solid fa-gas-pump" style="color:var(--accent)"></i> Carga de Gasolina</div>
+                    <div style="color:var(--muted);font-size:11px">${new Date(g.fecha).toLocaleDateString()} - ${g.litros} Litros</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px">
+                    <span style="color:var(--danger);font-weight:700">$${parseFloat(g.costo_total).toLocaleString('es-MX')}</span>
+                    <button class="btn-fs btn-small btn-fs-success" style="margin:0" onclick="pagarDeuda('gasolina', ${g.id_gasolina})"><i class="fa-solid fa-check"></i> Saldar</button>
+                </div>
+            </div>`;
+        });
+        deudasRep.forEach(e => {
+            html += `<div class="rank-item" style="gap:12px; align-items:center">
+                <div>
+                    <div class="rank-name"><i class="fa-solid fa-wrench" style="color:var(--warn)"></i> ${sanitizar(e.tipo_evento)}</div>
+                    <div style="color:var(--muted);font-size:11px">${new Date(e.fecha_evento).toLocaleDateString()}</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px">
+                    <span style="color:var(--danger);font-weight:700">$${parseFloat(e.costo).toLocaleString('es-MX')}</span>
+                    <button class="btn-fs btn-small btn-fs-success" style="margin:0" onclick="pagarDeuda('eventos', ${e.id_evento})"><i class="fa-solid fa-check"></i> Saldar</button>
+                </div>
+            </div>`;
+        });
+    }
+    document.getElementById('lista-deudas').innerHTML = html;
+    new bootstrap.Modal(document.getElementById('modal-deudas')).show();
+}
+
+window.pagarDeuda = async function(tipo, id) {
+    const { isConfirmed } = await Swal.fire({
+        title: '¿Saldar esta cuenta?',
+        text: "Se marcará como Pagado.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, pagar',
+        background: '#0e1421', color: '#e8edf5'
+    });
+    if (isConfirmed) {
+        await apiFetch(`/api/${tipo}/${id}/pagar`, { method: 'PUT' });
+        bootstrap.Modal.getInstance(document.getElementById('modal-deudas'))?.hide();
+        Swal.fire({ icon:'success', title:'Cuenta saldada', background:'#0e1421', color:'#e8edf5', timer:1500 });
+        cargarFinanciero();
+    }
 }
 
 async function cargarVehiculos() {
@@ -626,7 +709,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (r !== null) {
             bootstrap.Modal.getInstance(document.getElementById('modal-gasolina'))?.hide();
-            Swal.fire({ icon:'success', title:'¡Combustible registrado!', ...SWAL_DARK }).then(() => cargarVehiculos());
+            Swal.fire({ icon:'success', title:'¡Combustible registrado como deuda!', ...SWAL_DARK }).then(() => cargarVehiculos());
         }
     });
 

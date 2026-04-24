@@ -2,31 +2,29 @@ const express = require('express');
 const enrutador = express.Router();
 const bd = require('../bd/conexion');
 
-// 🔥 1. LEER TODOS LOS TICKETS (Para sumar en la pestaña Financiero)
 enrutador.get('/', (req, res) => {
     const consulta = 'SELECT * FROM registros_gasolina';
     bd.query(consulta, (error, resultados) => {
-        if (error) return res.status(500).json({ error: 'Error al obtener registros de gasolina' });
+        if (error) return res.status(500).json({ error: 'Error' });
         res.json(resultados);
     });
 });
 
-// 2. GUARDAR UN NUEVO TICKET
 enrutador.post('/', (req, res) => {
     const { id_vehiculo, litros, costo_total, kilometraje } = req.body;
+    const consulta = "INSERT INTO registros_gasolina (id_vehiculo, litros, costo_total, kilometraje, estado_pago) VALUES (?, ?, ?, ?, 'Pendiente')";
     
-    if (!id_vehiculo || !litros || !costo_total || !kilometraje) {
-        return res.status(400).json({ error: 'Faltan datos' });
-    }
+    bd.query(consulta, [id_vehiculo, litros, costo_total, kilometraje], (err) => {
+        if (err) return res.status(500).json({ error: 'Error' });
+        res.status(201).json({ mensaje: 'Carga registrada como pendiente' });
+    });
+});
 
-    const consulta = 'INSERT INTO registros_gasolina (id_vehiculo, litros, costo_total, kilometraje) VALUES (?, ?, ?, ?)';
-    
-    bd.query(consulta, [id_vehiculo, litros, costo_total, kilometraje], (err, result) => {
-        if (err) {
-            console.error("Error al guardar gasolina:", err);
-            return res.status(500).json({ error: 'Error al registrar combustible' });
-        }
-        res.status(201).json({ mensaje: 'Carga de combustible registrada' });
+// 🔥 NUEVA RUTA: Saldar deuda de gasolina
+enrutador.put('/:id/pagar', (req, res) => {
+    bd.query("UPDATE registros_gasolina SET estado_pago = 'Pagado' WHERE id_gasolina = ?", [req.params.id], (err) => {
+        if (err) return res.status(500).json({ error: 'Error' });
+        res.json({ mensaje: 'Deuda saldada' });
     });
 });
 
