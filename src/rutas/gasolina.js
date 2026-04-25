@@ -11,10 +11,10 @@ enrutador.get('/', (req, res) => {
 });
 
 enrutador.post('/', (req, res) => {
-    const { id_vehiculo, litros, costo_total, kilometraje } = req.body;
-    const consulta = "INSERT INTO registros_gasolina (id_vehiculo, litros, costo_total, kilometraje, estado_pago) VALUES (?, ?, ?, ?, 'Pendiente')";
+    const { id_vehiculo, litros, costo_total, kilometraje, id_usuario } = req.body;
+    const consulta = "INSERT INTO registros_gasolina (id_vehiculo, id_usuario, litros, costo_total, kilometraje, estado_pago) VALUES (?, ?, ?, ?, ?, 'Pendiente')";
     
-    bd.query(consulta, [id_vehiculo, litros, costo_total, kilometraje], (err) => {
+    bd.query(consulta, [id_vehiculo, id_usuario || null, litros, costo_total, kilometraje], (err) => {
         if (err) return res.status(500).json({ error: 'Error' });
         res.status(201).json({ mensaje: 'Carga registrada como pendiente' });
     });

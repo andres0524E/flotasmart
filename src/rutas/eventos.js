@@ -11,10 +11,10 @@ enrutador.get('/', (req, res) => {
 });
 
 enrutador.post('/', (req, res) => {
-    const { id_vehiculo, tipo_evento, descripcion, costo } = req.body;
-    const consulta = "INSERT INTO eventos (id_vehiculo, tipo_evento, descripcion, fecha_evento, costo, estado_pago) VALUES (?, ?, ?, NOW(), ?, 'Pendiente')";
+    const { id_vehiculo, tipo_evento, descripcion, costo, id_usuario } = req.body;
+    const consulta = "INSERT INTO eventos (id_vehiculo, id_usuario, tipo_evento, descripcion, fecha_evento, costo, estado_pago) VALUES (?, ?, ?, ?, NOW(), ?, 'Pendiente')";
     
-    bd.query(consulta, [id_vehiculo, tipo_evento, descripcion, costo || 0], (error, resultados) => {
+    bd.query(consulta, [id_vehiculo, id_usuario || null, tipo_evento, descripcion, costo || 0], (error, resultados) => {
         if (error) return res.status(500).json({ error: 'Error' });
         res.status(201).json({ mensaje: 'Evento registrado' });
     });

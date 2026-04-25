@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlotaSmart | Solicitud de Registro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{--bg:#080c14;--card:#0e1421;--border:rgba(255,255,255,0.06);--accent:#ff4d4d;--accent2:#cc0000;--text:#e8edf5;--muted:#5a6a80;--danger:#ff4757;--success:#00e676}
+        body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+        body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,77,77,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,77,77,0.03) 1px,transparent 1px);background-size:50px 50px;animation:gridMove 20s linear infinite;pointer-events:none}
+        @keyframes gridMove{0%{background-position:0 0}100%{background-position:50px 50px}}
+        .orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:.15;pointer-events:none;animation:orbFloat 8s ease-in-out infinite alternate}
+        .orb-1{width:400px;height:400px;background:#cc0000;top:-100px;left:-100px}
+        .orb-2{width:300px;height:300px;background:#ff4d4d;bottom:-80px;right:-80px;animation-delay:-4s}
+        @keyframes orbFloat{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,20px) scale(1.1)}}
+        .wrap{width:100%;max-width:460px;position:relative;z-index:10;animation:slideUp .6s cubic-bezier(.16,1,.3,1) both}
+        @keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+        .card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:40px 36px;box-shadow:0 0 0 1px rgba(255,77,77,0.05),0 40px 80px rgba(0,0,0,0.5);position:relative;overflow:hidden}
+        .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,77,77,0.4),transparent)}
+        .logo{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px}
+        .logo span{color:var(--accent)}
+        .logo-dot{display:inline-block;width:7px;height:7px;background:var(--accent);border-radius:50%;margin-left:2px;animation:pulse 2s ease-in-out infinite;vertical-align:middle;margin-bottom:3px}
+        @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,77,77,0.4)}50%{box-shadow:0 0 0 8px rgba(255,77,77,0)}}
+        .tagline{color:var(--muted);font-size:12px;letter-spacing:.5px;margin-bottom:32px}
+        .title-reg{font-family:'Montserrat',sans-serif;font-size:17px;font-weight:700;margin-bottom:4px;color:var(--text)}
+        .subtitle-reg{font-size:12px;color:var(--muted);margin-bottom:28px;line-height:1.5}
+        .field-group{margin-bottom:16px}
+        .field-label{display:block;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+        .field-input,.field-select{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:13px 16px;transition:all .2s;outline:none;appearance:none}
+        .field-input::placeholder{color:var(--muted)}
+        .field-input:focus,.field-select:focus{border-color:rgba(255,77,77,0.4);background:rgba(255,77,77,0.04);box-shadow:0 0 0 3px rgba(255,77,77,0.08)}
+        .field-select option{background:#111827;color:var(--text)}
+        .rol-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+        .rol-card{background:rgba(255,255,255,0.03);border:1.5px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:all .2s;position:relative}
+        .rol-card:hover{border-color:rgba(255,77,77,0.3);background:rgba(255,77,77,0.04)}
+        .rol-card.selected{border-color:var(--accent);background:rgba(255,77,77,0.08)}
+        .rol-card input[type=radio]{position:absolute;opacity:0;pointer-events:none}
+        .rol-icon{font-size:20px;margin-bottom:6px;display:block}
+        .rol-name{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:.5px}
+        .rol-desc{font-size:10px;color:var(--muted);margin-top:2px}
+        .notice{background:rgba(255,190,33,0.08);border:1px solid rgba(255,190,33,0.2);border-radius:10px;padding:12px 14px;font-size:11px;color:#ffbe21;margin-bottom:20px;display:flex;gap:10px;align-items:flex-start;line-height:1.5}
+        .btn-submit{width:100%;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:12px;color:#fff;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;letter-spacing:.5px;padding:15px;cursor:pointer;margin-top:8px;transition:all .3s;position:relative;overflow:hidden}
+        .btn-submit:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(204,0,0,0.4)}
+        .btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+        .link-login{text-align:center;margin-top:20px;font-size:12px;color:var(--muted)}
+        .link-login a{color:var(--accent);text-decoration:none;font-weight:600}
+        .link-login a:hover{text-decoration:underline}
+        .alert{border-radius:10px;font-size:12px;padding:12px 14px;margin-top:14px;display:none;animation:shake .4s ease}
+        .alert-error{background:rgba(255,71,87,0.1);border:1px solid rgba(255,71,87,0.3);color:#ff6b7a}
+        .alert-success{background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.2);color:var(--success)}
+        @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+        .divider{height:1px;background:var(--border);margin:20px 0}
+    </style>
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="wrap">
+    <div class="card">
+        <div class="logo"><i class="fa-solid fa-truck-fast"></i> Flota<span>Smart</span><span class="logo-dot"></span></div>
+        <p class="tagline">Sistema de gestión inteligente de flotas</p>
+        <div class="divider"></div>
+        <p class="title-reg"><i class="fa-solid fa-user-plus" style="color:var(--accent);margin-right:6px"></i>Solicitud de Acceso</p>
+        <p class="subtitle-reg">Completa tu información. Un administrador revisará y aprobará tu solicitud antes de que puedas ingresar.</p>
+
+        <form id="formulario-registro" autocomplete="off">
+            <div class="field-group">
+                <label class="field-label">Nombre Completo</label>
+                <input type="text" class="field-input" id="reg-nombre" placeholder="Ej: Juan Carlos Pérez" required maxlength="100">
+            </div>
+            <div class="field-group">
+                <label class="field-label">Departamento / Área</label>
+                <input type="text" class="field-input" id="reg-departamento" placeholder="Ej: Logística, Mantenimiento..." required maxlength="50">
+            </div>
+            <div class="field-group">
+                <label class="field-label">Correo Electrónico</label>
+                <input type="email" class="field-input" id="reg-correo" placeholder="tu@empresa.mx" required maxlength="100">
+            </div>
+            <div class="field-group">
+                <label class="field-label">Contraseña</label>
+                <input type="password" class="field-input" id="reg-contrasena" placeholder="Mínimo 6 caracteres" required minlength="6" maxlength="100">
+            </div>
+
+            <div class="field-group">
+                <label class="field-label" style="margin-bottom:10px">Rol Solicitado</label>
+                <div class="rol-grid">
+                    <label class="rol-card" id="card-chofer">
+                        <input type="radio" name="rol" value="chofer" id="rol-chofer" required>
+                        <span class="rol-icon">🚗</span>
+                        <div class="rol-name">Chofer</div>
+                        <div class="rol-desc">Solicita unidades y registra combustible</div>
+                    </label>
+                    <label class="rol-card" id="card-mecanico">
+                        <input type="radio" name="rol" value="mecanico" id="rol-mecanico" required>
+                        <span class="rol-icon">🔧</span>
+                        <div class="rol-name">Mecánico</div>
+                        <div class="rol-desc">Gestiona unidades en taller y mantenimiento</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="notice">
+                <i class="fa-solid fa-circle-info" style="margin-top:1px;flex-shrink:0"></i>
+                <span>El rol <strong>Administrador</strong> no está disponible en el auto-registro. Si necesitas ese nivel de acceso, el administrador puede asignártelo manualmente al aprobar tu solicitud.</span>
+            </div>
+
+            <button type="submit" class="btn-submit" id="btn-enviar">
+                <i class="fa-solid fa-paper-plane"></i> Enviar Solicitud
+            </button>
+        </form>
+
+        <div id="alerta-error" class="alert alert-error"></div>
+        <div id="alerta-exito" class="alert alert-success"></div>
+
+        <p class="link-login">¿Ya tienes cuenta? <a href="login.html">Iniciar sesión</a></p>
+    </div>
+</div>
+<script>
+    // Rol cards interactivos
+    document.querySelectorAll('.rol-card').forEach(card => {
+        card.addEventListener('click', () => {
+            document.querySelectorAll('.rol-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+        });
+    });
+
+    document.getElementById('formulario-registro').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const nombre = document.getElementById('reg-nombre').value.trim();
+        const departamento = document.getElementById('reg-departamento').value.trim();
+        const correo = document.getElementById('reg-correo').value.trim();
+        const contrasena = document.getElementById('reg-contrasena').value;
+        const rolRadio = document.querySelector('input[name="rol"]:checked');
+        const divError = document.getElementById('alerta-error');
+        const divExito = document.getElementById('alerta-exito');
+
+        divError.style.display = 'none';
+        divExito.style.display = 'none';
+
+        if (!rolRadio) {
+            divError.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Selecciona un rol para continuar.';
+            divError.style.display = 'block'; return;
+        }
+        if (contrasena.length < 6) {
+            divError.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> La contraseña debe tener al menos 6 caracteres.';
+            divError.style.display = 'block'; return;
+        }
+
+        const btn = document.getElementById('btn-enviar');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Enviando...';
+
+        try {
+            const res = await fetch('https://flotasmart-backend.onrender.com/api/registro', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre, departamento, correo, contrasena, rol_solicitado: rolRadio.value })
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                document.getElementById('formulario-registro').style.display = 'none';
+                divExito.innerHTML = `<i class="fa-solid fa-circle-check"></i> <strong>¡Solicitud enviada!</strong> El administrador revisará tu solicitud y activará tu cuenta. Podrás iniciar sesión una vez que sea aprobada.`;
+                divExito.style.display = 'block';
+            } else {
+                divError.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${data.error || 'Error al enviar solicitud'}`;
+                divError.style.display = 'block';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Solicitud';
+            }
+        } catch (err) {
+            divError.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Error de conexión. Intenta de nuevo.';
+            divError.style.display = 'block';
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Solicitud';
+        }
+    });
+</script>
+</body>
+</html>

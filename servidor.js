@@ -16,13 +16,15 @@ const rutasVehiculos = require('./src/rutas/vehiculos');
 const rutasEventos = require('./src/rutas/eventos');
 const rutasUsos = require('./src/rutas/usos');
 const rutasGasolina = require('./src/rutas/gasolina');
-const rutasHistorial = require('./src/rutas/historial'); // 🔥 CONECTAMOS EL HISTORIAL
+const rutasHistorial = require('./src/rutas/historial');
+const rutasRegistro = require('./src/rutas/registro');
 
 app.use('/api/vehiculos', rutasVehiculos);
 app.use('/api/eventos', rutasEventos);
 app.use('/api/usos', rutasUsos);
 app.use('/api/gasolina', rutasGasolina);
-app.use('/api/historial', rutasHistorial); // 🔥 RUTA ACTIVA
+app.use('/api/historial', rutasHistorial);
+app.use('/api/registro', rutasRegistro);
 
 // ==========================================
 // RUTA DE LOGIN
