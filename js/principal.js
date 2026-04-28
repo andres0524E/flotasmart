@@ -1039,4 +1039,5 @@ window.procesarSolicitud = async function(accion, id) {
         solicitudesGlobal = solicitudesGlobal.filter(s => s.id_solicitud !== id);
         await cargarConteoNotificaciones();
         abrirBandeja();
-    };
+    }
+};
