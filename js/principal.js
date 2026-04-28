@@ -1,6 +1,5 @@
 'use strict';
 
-// 🔥 LA VARIABLE OSCURA AHORA VIVE HASTA ARRIBA PARA EVITAR ERRORES 🔥
 const SWAL_DARK = { background: '#0e1421', color: '#e8edf5', confirmButtonColor: '#cc0000' };
 const API_URL = 'https://flotasmart-backend.onrender.com';
 let vehiculosGlobal = [];
@@ -9,6 +8,10 @@ let evtDataGlobal = [];
 let filtroActivo = 'todos';
 let solicitudesGlobal = [];
 let solicitudSeleccionada = null;
+
+// ============================================================
+// FUNCIONES DE SEGURIDAD Y CONEXIÓN
+// ============================================================
 
 function verificarSesion() {
     const raw   = localStorage.getItem('usuarioFlota');
@@ -56,6 +59,10 @@ async function apiFetch(url, opts = {}) {
     }
 }
 
+// ============================================================
+// FUNCIONES UI DE VEHÍCULOS
+// ============================================================
+
 function claseEstado(estado) {
     const e = (estado || '').toLowerCase();
     if (e === 'activo') return 'activo';
@@ -97,8 +104,9 @@ function renderizarVehiculos(vehiculos) {
 
     const usuario = verificarSesion();
     if (!usuario) return;
-    const esChofer = usuario.rol === 'chofer';
-    const esMecanico = usuario.rol === 'mecanico';
+    const rol = usuario.rol;
+    const esChofer = rol === 'chofer';
+    const esMecanico = rol === 'mecanico';
 
     let lista = vehiculos;
     if (esMecanico) lista = vehiculos.filter(v => claseEstado(v.estado_actual) === 'taller');
@@ -202,8 +210,12 @@ window.abrirModalDetalles = function(id) {
     } else if (cls === 'taller') {
         botonesHTML += `<button class="btn-fs btn-fs-warn" onclick="window.cerrarDetallesYabrir('liberar',${id})"><i class="fa-solid fa-check"></i> Liberar del Taller</button>`;
     } else if (auto.estado_actual?.toLowerCase() === 'pendiente') {
-        botonesHTML += `<button class="btn-fs btn-fs-success" onclick="window.responderPeticion(${id},'Aprobar')"><i class="fa-solid fa-check"></i> Aprobar Salida</button>`;
-        botonesHTML += `<button class="btn-fs btn-fs-danger" onclick="window.responderPeticion(${id},'Rechazar')"><i class="fa-solid fa-xmark"></i> Rechazar</button>`;
+        // 🔥 EL ADMIN APRUEBA O RECHAZA LA SALIDA
+        botonesHTML += `<button class="btn-fs btn-fs-success" onclick="window.responderPeticion(${id},'Aprobar Salida')"><i class="fa-solid fa-check"></i> Aprobar Salida</button>`;
+        botonesHTML += `<button class="btn-fs btn-fs-danger" onclick="window.responderPeticion(${id},'Rechazar Salida')"><i class="fa-solid fa-xmark"></i> Rechazar Salida</button>`;
+    } else if (auto.estado_actual?.toLowerCase() === 'retorno pendiente') {
+        // 🔥 EL ADMIN APRUEBA EL REGRESO
+        botonesHTML += `<button class="btn-fs btn-fs-info" onclick="window.responderPeticion(${id},'Aprobar Retorno')"><i class="fa-solid fa-check-double"></i> Aprobar Retorno de Unidad</button>`;
     } else if (cls === 'ruta') {
         botonesHTML += `<button class="btn-fs btn-fs-info" onclick="window.cerrarDetallesYabrir('retorno',${id})"><i class="fa-solid fa-location-dot"></i> Registrar Retorno</button>`;
     } else if (cls === 'bloqueado') {
@@ -283,6 +295,12 @@ window.abrirModalEvento = function(id) {
     new bootstrap.Modal(document.getElementById('modal-evento')).show();
 };
 
+window.abrirModalLiberar = function(id) {
+    document.getElementById('liberar-id-vehiculo').value = id;
+    document.getElementById('liberar-descripcion').value = '';
+    new bootstrap.Modal(document.getElementById('modal-liberar')).show();
+};
+
 window.editarTanque = async function(id, actual) {
     const { value: cap } = await Swal.fire({
         title: 'Capacidad del Tanque',
@@ -326,12 +344,15 @@ window.desbloquearVehiculo = async function(id) {
 
 window.responderPeticion = async function(id, accion) {
     const { isConfirmed } = await Swal.fire({
-        icon: 'warning', title: `¿${accion} solicitud?`,
-        showCancelButton: true, confirmButtonText: `Sí, ${accion}`, ...SWAL_DARK
+        icon: 'question', title: `¿${accion}?`,
+        showCancelButton: true, confirmButtonText: `Sí, confirmar`, ...SWAL_DARK
     });
     if (isConfirmed) {
-        const endpoint = accion === 'Rechazar' ? `/api/vehiculos/${id}/liberar` : `/api/vehiculos/${id}/ruta`;
-        await apiFetch(endpoint, { method: 'PUT' });
+        // 🔥 LÓGICA DE APROBACIÓN DE SALIDAS Y RETORNOS
+        let nuevoEstado = 'Activo';
+        if (accion === 'Aprobar Salida') nuevoEstado = 'En Ruta';
+        
+        await apiFetch(`/api/vehiculos/${id}/estado`, { method: 'PUT', body: JSON.stringify({ estado: nuevoEstado }) });
         bootstrap.Modal.getInstance(document.getElementById('modal-detalles'))?.hide();
         cargarVehiculos();
     }
@@ -553,6 +574,10 @@ window.pagarDeuda = async function(tipo, id) {
     }
 };
 
+// ============================================================
+// PDF
+// ============================================================
+
 window.generarReportePDF = async function(id) {
     const auto = vehiculosGlobal.find(v => v.id_vehiculo === id);
     if (!auto) return;
@@ -654,7 +679,7 @@ window.generarReportePDF = async function(id) {
 };
 
 // ============================================================
-// NOTIFICACIONES (ADMIN)
+// NOTIFICACIONES Y APROBACIONES (ADMIN)
 // ============================================================
 
 window.cargarConteoNotificaciones = async function() {
@@ -682,12 +707,18 @@ window.abrirBandeja = async function() {
     solicitudesGlobal = datos || [];
 
     if (solicitudesGlobal.length === 0) {
-        lista.innerHTML = `<div style="color:var(--muted);font-size:12px;text-align:center;padding:30px 0"><i class="fa-solid fa-inbox" style="font-size:28px;display:block;margin-bottom:8px;opacity:.4"></i>Sin solicitudes pendientes</div>`;
-        document.getElementById('inbox-detalle').innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;color:var(--muted);gap:12px"><i class="fa-solid fa-circle-check" style="font-size:32px;opacity:.3;color:var(--success)"></i><span style="font-size:13px">Todo al día</span></div>`;
+        lista.innerHTML = `<div style="color:var(--muted);font-size:13px;text-align:center;padding:30px 0">
+            <i class="fa-solid fa-inbox" style="font-size:28px;display:block;margin-bottom:8px;opacity:.4"></i>
+            Sin solicitudes pendientes
+        </div>`;
+        document.getElementById('inbox-detalle').innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;color:var(--muted);gap:12px">
+            <i class="fa-solid fa-circle-check" style="font-size:32px;opacity:.3;color:var(--success)"></i>
+            <span style="font-size:13px">Todo al día</span>
+        </div>`;
         return;
     }
 
-    lista.innerHTML = solicitudesGlobal.map((s) => {
+    lista.innerHTML = solicitudesGlobal.map((s, i) => {
         const fecha = new Date(s.fecha_solicitud).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' });
         return `<div class="inbox-item" id="inbox-item-${s.id_solicitud}" onclick="window.verSolicitud(${s.id_solicitud})">
             <div class="inbox-from"><i class="fa-solid fa-user-clock" style="color:var(--accent);margin-right:6px;font-size:11px"></i>${sanitizar(s.nombre)}</div>
@@ -714,35 +745,66 @@ window.verSolicitud = function(id) {
     document.getElementById('inbox-detalle').innerHTML = `
         <div class="email-view">
             <div class="email-header">
-                <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:16px;margin-bottom:12px">Solicitud de Acceso al Sistema</div>
+                <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:16px;margin-bottom:12px">
+                    Solicitud de Acceso al Sistema
+                </div>
                 <div class="email-field"><strong>De:</strong> ${sanitizar(s.nombre)}</div>
                 <div class="email-field"><strong>Correo:</strong> <span style="color:var(--accent)">${sanitizar(s.correo)}</span></div>
                 <div class="email-field"><strong>Departamento:</strong> ${sanitizar(s.departamento)}</div>
                 <div class="email-field"><strong>Fecha:</strong> ${fecha}</div>
-                <div class="email-field" style="margin-top:8px"><strong>Rol solicitado:</strong><span style="background:rgba(255,255,255,0.07);border-radius:6px;padding:3px 10px;margin-left:6px;font-weight:700;color:${rolColor}">${rolIcon} ${sanitizar(s.rol_solicitado).toUpperCase()}</span></div>
+                <div class="email-field" style="margin-top:8px">
+                    <strong>Rol solicitado:</strong>
+                    <span style="background:rgba(255,255,255,0.07);border-radius:6px;padding:3px 10px;margin-left:6px;font-weight:700;color:${rolColor}">
+                        ${rolIcon} ${sanitizar(s.rol_solicitado).toUpperCase()}
+                    </span>
+                </div>
             </div>
-            <p style="font-size:13px;color:var(--muted);line-height:1.6">El empleado <strong style="color:var(--text)">${sanitizar(s.nombre)}</strong> ha solicitado acceso al sistema FlotaSmart con el rol de <strong style="color:${rolColor}">${sanitizar(s.rol_solicitado)}</strong>. Puedes aprobar la solicitud con el rol solicitado, asignarle el rol de <strong style="color:var(--accent)">Administrador</strong>, o rechazarla.</p>
+
+            <p style="font-size:13px;color:var(--muted);line-height:1.6">
+                El empleado <strong style="color:var(--text)">${sanitizar(s.nombre)}</strong> ha solicitado acceso al sistema FlotaSmart con el rol de 
+                <strong style="color:${rolColor}">${sanitizar(s.rol_solicitado)}</strong>.
+                Puedes aprobar la solicitud con el rol solicitado, asignarle el rol de <strong style="color:var(--accent)">Administrador</strong>, o rechazarla.
+            </p>
+
             <div class="admin-override">
                 <div class="admin-override-title"><i class="fa-solid fa-shield-halved" style="margin-right:6px"></i>Asignar Rol de Administrador</div>
-                <label class="override-check" id="check-admin-label"><input type="checkbox" id="check-dar-admin"><span>Dar acceso de <strong>Administrador</strong> a este usuario</span></label>
+                <label class="override-check" id="check-admin-label">
+                    <input type="checkbox" id="check-dar-admin">
+                    <span>Dar acceso de <strong>Administrador</strong> a este usuario</span>
+                </label>
             </div>
+
             <div class="email-actions">
-                <button class="btn-fs btn-fs-success" onclick="window.procesarSolicitud('aprobar', ${s.id_solicitud})"><i class="fa-solid fa-circle-check"></i> Aprobar Solicitud</button>
-                <button class="btn-fs btn-fs-danger" onclick="window.procesarSolicitud('rechazar', ${s.id_solicitud})" style="background:rgba(255,71,87,0.1);color:var(--danger);border:1px solid rgba(255,71,87,0.2)"><i class="fa-solid fa-circle-xmark"></i> Rechazar</button>
+                <button class="btn-fs btn-fs-success" onclick="window.procesarSolicitud('aprobar', ${s.id_solicitud})">
+                    <i class="fa-solid fa-circle-check"></i> Aprobar Solicitud
+                </button>
+                <button class="btn-fs btn-fs-danger" onclick="window.procesarSolicitud('rechazar', ${s.id_solicitud})" style="background:rgba(255,71,87,0.1);color:var(--danger);border:1px solid rgba(255,71,87,0.2)">
+                    <i class="fa-solid fa-circle-xmark"></i> Rechazar
+                </button>
             </div>
         </div>`;
 };
 
 window.procesarSolicitud = async function(accion, id) {
+    const usuario = verificarSesion();
+    if (!usuario) return;
+
     if (accion === 'rechazar') {
-        const { isConfirmed } = await Swal.fire({ title: '¿Rechazar esta solicitud?', text: 'El usuario no podrá ingresar al sistema.', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí, rechazar', cancelButtonText: 'Cancelar', ...SWAL_DARK });
+        const { isConfirmed } = await Swal.fire({
+            title: '¿Rechazar esta solicitud?',
+            text: 'El usuario no podrá ingresar al sistema.',
+            icon: 'warning', showCancelButton: true,
+            confirmButtonText: 'Sí, rechazar', cancelButtonText: 'Cancelar',
+            ...SWAL_DARK
+        });
         if (!isConfirmed) return;
 
         const r = await apiFetch(`/api/registro/${id}/rechazar`, { method: 'PUT', body: JSON.stringify({}) });
         if (r !== null) {
             Swal.fire({ icon: 'success', title: 'Solicitud rechazada', timer: 1500, ...SWAL_DARK });
             solicitudesGlobal = solicitudesGlobal.filter(s => s.id_solicitud !== id);
-            await window.cargarConteoNotificaciones(); window.abrirBandeja();
+            await window.cargarConteoNotificaciones();
+            window.abrirBandeja();
         }
         return;
     }
@@ -752,17 +814,21 @@ window.procesarSolicitud = async function(accion, id) {
     const { isConfirmed } = await Swal.fire({
         title: darAdmin ? '¿Aprobar como Administrador?' : '¿Aprobar solicitud?',
         text: darAdmin ? 'Este usuario tendrá acceso total al sistema.' : 'El usuario podrá acceder con su rol solicitado.',
-        icon: 'question', showCancelButton: true, confirmButtonText: 'Sí, aprobar', cancelButtonText: 'Cancelar', ...SWAL_DARK
+        icon: 'question', showCancelButton: true,
+        confirmButtonText: 'Sí, aprobar', cancelButtonText: 'Cancelar',
+        ...SWAL_DARK
     });
     if (!isConfirmed) return;
 
     const r = await apiFetch(`/api/registro/${id}/aprobar`, {
-        method: 'PUT', body: JSON.stringify({ rol_final: darAdmin ? 'admin' : null })
+        method: 'PUT',
+        body: JSON.stringify({ rol_final: darAdmin ? 'admin' : null })
     });
     if (r) {
         Swal.fire({ icon: 'success', title: '¡Usuario aprobado!', timer: 1500, ...SWAL_DARK });
         solicitudesGlobal = solicitudesGlobal.filter(s => s.id_solicitud !== id);
-        await window.cargarConteoNotificaciones(); window.abrirBandeja();
+        await window.cargarConteoNotificaciones();
+        window.abrirBandeja();
     }
 };
 
@@ -778,14 +844,16 @@ async function cargarVehiculos() {
 }
 
 // ============================================================
-// LISTENERS Y EVENTOS PRINCIPALES
+// INICIALIZACIÓN
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', () => {
     const usuario = verificarSesion();
     if (!usuario) return;
 
-    document.getElementById('nav-nombre').textContent = `${usuario.nombre || 'Usuario'}`;
+    // 🔥 AHORA SOLO MUESTRA LA PRIMERA PALABRA DEL NOMBRE PARA NO AMONTONAR
+    const nombreCorto = usuario.nombre ? usuario.nombre.split(' ')[0] : 'Usuario';
+    document.getElementById('nav-nombre').textContent = nombreCorto;
     document.getElementById('nav-rol').textContent = usuario.rol?.toUpperCase() || '—';
 
     const esChofer = usuario.rol === 'chofer';
@@ -817,7 +885,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cargarVehiculos();
 
-    // ─── FORMULARIOS ───
+    // LISTENERS DE MODALES
     document.getElementById('formulario-vehiculo')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const placa = sanitizar(document.getElementById('input-placa').value);
@@ -841,6 +909,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    document.getElementById('formulario-uso')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('uso-id-vehiculo').value;
+        const idUsr = document.getElementById('uso-id-usuario').value;
+        const prop = document.getElementById('uso-proposito').value;
+        const km = parseFloat(document.getElementById('uso-kilometraje').value);
+        const r = await apiFetch('/api/usos', {
+            method: 'POST', body: JSON.stringify({ id_vehiculo: id, id_usuario: idUsr, proposito: prop, kilometraje_salida: km })
+        });
+        if (r !== null) {
+            // 🔥 MANDA EL AUTO A ESTADO 'PENDIENTE' PARA QUE EL ADMIN LO APRUEBE
+            await apiFetch(`/api/vehiculos/${id}/estado`, { method: 'PUT', body: JSON.stringify({ estado: 'Pendiente' }) });
+            bootstrap.Modal.getInstance(document.getElementById('modal-uso'))?.hide();
+            Swal.fire({ icon:'success', title:'¡Petición enviada!', text:'El administrador debe aprobarla.', ...SWAL_DARK }).then(() => cargarVehiculos());
+        }
+    });
+
     document.getElementById('formulario-retorno')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('retorno-id-vehiculo').value;
@@ -855,27 +940,13 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'PUT', body: JSON.stringify({ kilometraje: km, nivel_combustible: gas })
         });
         if (r !== null) {
+            // 🔥 MANDA EL AUTO A ESTADO 'RETORNO PENDIENTE' PARA QUE EL ADMIN LO APRUEBE
+            await apiFetch(`/api/vehiculos/${id}/estado`, { method: 'PUT', body: JSON.stringify({ estado: 'Retorno Pendiente' }) });
             bootstrap.Modal.getInstance(document.getElementById('modal-retorno'))?.hide();
-            Swal.fire({ icon:'success', title:'¡Retorno registrado!', ...SWAL_DARK }).then(() => cargarVehiculos());
+            Swal.fire({ icon:'success', title:'¡Retorno en revisión!', text:'El administrador debe confirmar la llegada.', ...SWAL_DARK }).then(() => cargarVehiculos());
         }
     });
 
-    document.getElementById('formulario-uso')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const id = document.getElementById('uso-id-vehiculo').value;
-        const idUsr = document.getElementById('uso-id-usuario').value;
-        const prop = document.getElementById('uso-proposito').value;
-        const km = parseFloat(document.getElementById('uso-kilometraje').value);
-        const r = await apiFetch('/api/usos', {
-            method: 'POST', body: JSON.stringify({ id_vehiculo: id, id_usuario: idUsr, proposito: prop, kilometraje_salida: km })
-        });
-        if (r !== null) {
-            bootstrap.Modal.getInstance(document.getElementById('modal-uso'))?.hide();
-            Swal.fire({ icon:'success', title:'¡Petición enviada!', text:'El administrador debe aprobarla.', ...SWAL_DARK }).then(() => cargarVehiculos());
-        }
-    });
-
-    // 🔥 LA MAGIA DE LA GASOLINA 🔥
     document.getElementById('formulario-gasolina')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('gasolina-id-vehiculo').value;
@@ -885,23 +956,18 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (litros <= 0 || costo < 0) { Swal.fire({ icon:'error', title:'Datos inválidos', ...SWAL_DARK }); return; }
 
-        // Calculamos el nuevo porcentaje de combustible
         const auto = vehiculosGlobal.find(v => v.id_vehiculo == id);
         const capTotal = parseFloat(auto.capacidad_tanque) || 50;
         const litrosActuales = ((auto.nivel_combustible || 0) / 100) * capTotal;
         const nuevoPorcentaje = Math.min(100, Math.round(((litrosActuales + litros) / capTotal) * 100));
 
-        // Registramos el ticket de pago (Financiero)
         const r = await apiFetch('/api/gasolina', {
             method: 'POST', body: JSON.stringify({ id_vehiculo: id, litros, costo_total: costo, kilometraje: km, id_usuario: usuario.id_usuario })
         });
-        
         if (r !== null) {
-            // Actualizamos la barrita visual del auto usando la ruta de retorno
             await apiFetch(`/api/vehiculos/${id}/retorno`, {
                 method: 'PUT', body: JSON.stringify({ kilometraje: km, nivel_combustible: nuevoPorcentaje })
             });
-
             bootstrap.Modal.getInstance(document.getElementById('modal-gasolina'))?.hide();
             Swal.fire({ icon:'success', title:'¡Combustible registrado!', ...SWAL_DARK }).then(() => cargarVehiculos());
         }

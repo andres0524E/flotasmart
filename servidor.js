@@ -15,10 +15,10 @@ const app = express();
 app.use(helmet());
 
 // ==========================================
-// 🔥 SEGURIDAD CORS (Corregida y Universal)
+// 🔥 SEGURIDAD CORS (Universal y a prueba de fallos)
 // ==========================================
 app.use(cors({
-    origin: '*', // Permite que tu frontend acceda sin problemas de sintaxis en la URL
+    origin: '*', // Permite acceso desde cualquier origen (Hostinger)
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -53,7 +53,7 @@ function verificarToken(req, res, next) {
 }
 
 // ==========================================
-// MIDDLEWARE: Solo admins 
+// MIDDLEWARE: Solo admins
 // ==========================================
 function soloAdmin(req, res, next) {
     if (req.usuario?.rol !== 'admin') {
@@ -62,7 +62,6 @@ function soloAdmin(req, res, next) {
     next();
 }
 
-// Compartir middlewares con las rutas
 app.set('verificarToken', verificarToken);
 app.set('soloAdmin', soloAdmin);
 
@@ -74,17 +73,23 @@ const rutasEventos   = require('./src/rutas/eventos');
 const rutasUsos      = require('./src/rutas/usos');
 const rutasGasolina  = require('./src/rutas/gasolina');
 const rutasHistorial = require('./src/rutas/historial');
-const rutasRegistro  = require('./src/rutas/registro');
+const rutasRegistro  = require('./src/rutas/registro'); // Llama a tu archivo registro.js
 
 app.use('/api/vehiculos', rutasVehiculos(app));
 app.use('/api/eventos',   rutasEventos(app));
 app.use('/api/usos',      rutasUsos(app));
 app.use('/api/gasolina',  rutasGasolina(app));
 app.use('/api/historial', verificarToken, rutasHistorial);
-app.use('/api/registro',  rutasRegistro(app));
+app.use('/api/registro',  rutasRegistro);
+
+// 🔥 RUTA MÁGICA PARA CAMBIAR ESTADOS 
+app.put('/api/vehiculos/:id/estado', (req, res) => {
+    bd.query('UPDATE vehiculos SET estado_actual = ? WHERE id_vehiculo = ?', 
+    [req.body.estado, req.params.id], () => res.json({msg: 'Estado actualizado'}));
+});
 
 // ==========================================
-// LOGIN — Devuelve JWT (pública, con rate limit)
+// LOGIN — Devuelve JWT 
 // ==========================================
 app.post('/api/login', limiterLogin, (req, res) => {
     const { correo, contrasena } = req.body;
@@ -92,12 +97,11 @@ app.post('/api/login', limiterLogin, (req, res) => {
 
     bd.query('SELECT * FROM usuarios WHERE correo = ?', [correo], async (error, resultados) => {
         if (error) return res.status(500).json({ error: 'Error en la base de datos' });
-
         if (resultados.length === 0) return res.status(401).json({ error: 'Credenciales incorrectas' });
 
         const usuario = resultados[0];
 
-        // Validaciones de estado de la cuenta
+        // 🔥 VALIDACIONES DE CUENTA (Faltaban en tu archivo anterior)
         if (usuario.estado_cuenta === 'Pendiente') return res.status(401).json({ error: 'Tu cuenta está en revisión por el Administrador.' });
         if (usuario.estado_cuenta === 'Rechazado') return res.status(401).json({ error: 'Registro rechazado.' });
 
