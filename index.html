@@ -19,45 +19,25 @@
         body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh}
         body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,77,77,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,77,77,0.02) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
 
-        /* NAVBAR */
+        /* NAVBAR Y CAMPANA */
         .navbar-fs{background:rgba(8,12,20,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:14px 0;position:sticky;top:0;z-index:100}
         .navbar-brand{font-family:'Montserrat',sans-serif;font-weight:800;font-size:22px;color:var(--text)!important;letter-spacing:-.5px}
         .navbar-brand span{color:var(--accent)}
         .nav-user{text-align:right}
         .nav-user-name{font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;color:var(--text)}
         .nav-user-rol{font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:1px;font-weight:600}
-
-        /* CAMPANA NOTIFICACIONES */
         .btn-notif{position:relative;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;color:var(--text);width:38px;height:38px;display:none;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:16px}
         .btn-notif:hover{background:rgba(255,77,77,0.1);border-color:rgba(255,77,77,0.3)}
         .notif-badge{position:absolute;top:-5px;right:-5px;background:var(--accent);color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px;animation:pulseBadge 2s ease-in-out infinite}
         @keyframes pulseBadge{0%,100%{box-shadow:0 0 0 0 rgba(255,77,77,0.5)}50%{box-shadow:0 0 0 6px rgba(255,77,77,0)}}
-
-        /* MODAL BANDEJA */
-        .inbox-item{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;cursor:pointer;transition:all .2s}
-        .inbox-item:hover{border-color:rgba(255,77,77,0.3);background:rgba(255,77,77,0.04)}
-        .inbox-item.selected{border-color:var(--accent);background:rgba(255,77,77,0.06)}
-        .inbox-from{font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px}
-        .inbox-meta{font-size:11px;color:var(--muted);margin-top:2px}
-        .inbox-rol-chip{display:inline-block;background:rgba(124,131,255,0.15);color:#7c83ff;border:1px solid rgba(124,131,255,0.2);border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.5px;padding:2px 8px;text-transform:uppercase;margin-top:6px}
-        .email-view{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:14px}
-        .email-header{border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:16px}
-        .email-field{font-size:12px;color:var(--muted);margin-bottom:6px}
-        .email-field strong{color:var(--text)}
-        .email-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
-        .admin-override{background:rgba(255,77,77,0.06);border:1px solid rgba(255,77,77,0.15);border-radius:10px;padding:14px;margin-top:14px}
-        .admin-override-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
-        .override-check{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;margin-bottom:12px}
-        .override-check input{accent-color:var(--accent);width:15px;height:15px}
         .btn-logout{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;padding:4px 12px;cursor:pointer;transition:all .2s;margin-top:4px;font-family:'Inter',sans-serif}
         .btn-logout:hover{border-color:var(--danger);color:var(--danger)}
 
+        /* ESTRUCTURA */
         .main-wrap{max-width:1300px;margin:0 auto;padding:32px 20px;position:relative;z-index:1}
         .panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;flex-wrap:wrap;gap:16px}
         .panel-title{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:800;letter-spacing:-.5px;margin:0}
         .panel-subtitle{color:var(--muted);font-size:14px;margin:4px 0 0}
-
-        /* TABS */
         .tabs-bar{display:flex;gap:4px;background:var(--surface);border-radius:14px;padding:6px;margin-bottom:32px;border:1px solid var(--border);flex-wrap:wrap}
         .tab-btn{flex:1;min-width:120px;background:none;border:none;color:var(--muted);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:10px 16px;border-radius:10px;cursor:pointer;transition:all .25s;white-space:nowrap}
         .tab-btn:hover{color:var(--text);background:rgba(255,255,255,0.04)}
@@ -66,7 +46,7 @@
         .tab-section.active{display:block}
         @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-        /* CARDS ESTADÍSTICAS */
+        /* TARJETAS DE AUTOS Y DASHBOARD */
         .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
         .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 24px;position:relative;overflow:hidden;transition:all .25s}
         .stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
@@ -76,23 +56,16 @@
         .stat-card.c-blocked::after{background:var(--blocked)}
         .stat-num{font-family:'Montserrat',sans-serif;font-size:36px;font-weight:800;line-height:1}
         .stat-label{color:var(--muted);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-top:6px}
-
-        /* DASHBOARD CHARTS */
         .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}
         @media(max-width:768px){.chart-grid{grid-template-columns:1fr}}
         .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px}
         .chart-card-title{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;color:var(--muted);letter-spacing:.5px;margin-bottom:20px;text-transform:uppercase}
-
-        /* FILTROS */
         .filters-row{display:flex;align-items:center;gap:10px;margin-bottom:24px;flex-wrap:wrap}
         .filter-btn{background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:13px;padding:8px 16px;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
         .filter-btn:hover{border-color:var(--accent);color:var(--accent)}
         .filter-btn.active{background:rgba(255,77,77,0.1);border-color:var(--accent);color:var(--accent);font-weight:600}
         .search-input{background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:8px 16px;outline:none;transition:all .2s;min-width:180px}
-        .search-input::placeholder{color:var(--muted)}
         .search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,77,77,0.08)}
-
-        /* TARJETAS VEHÍCULO */
         .vehicle-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
         .v-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;animation:cardIn .4s ease both}
         @keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
@@ -121,29 +94,32 @@
         .v-alert.show{display:block}
         .v-alert.seguro{background:rgba(255,71,87,0.1);color:#ff6b7a;border:1px solid rgba(255,71,87,0.2)}
         .v-alert.servicio{background:rgba(255,190,33,0.1);color:var(--warn);border:1px solid rgba(255,190,33,0.2)}
+        .v-chofer-actions{margin-top:16px;display:flex;flex-direction:column;gap:8px}
 
-        /* MÓDULO FINANCIERO */
+        /* MÓDULO FINANCIERO Y CORREOS */
         .finance-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:28px}
         .fin-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;position:relative;overflow:hidden}
         .fin-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
-        .fin-card.deuda{border-color:rgba(255,71,87,0.2);}
         .fin-card.deuda::after{background:linear-gradient(90deg,var(--danger),#ff8c69)}
-        .fin-card.pagado{border-color:rgba(0,230,118,0.2);}
         .fin-card.pagado::after{background:linear-gradient(90deg,var(--success),#00b09b)}
         .fin-card.total::after{background:linear-gradient(90deg,var(--info),var(--accent))}
         .fin-amount{font-family:'Montserrat',sans-serif;font-size:32px;font-weight:800;margin-top:6px}
         .fin-label{color:var(--muted);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px}
-        
         .fin-table{width:100%;border-collapse:separate;border-spacing:0 4px}
         .fin-table th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:8px 16px;font-weight:600}
         .fin-table td{background:var(--surface);padding:12px 16px;font-size:13px; vertical-align:middle;}
-        .fin-table tr td:first-child{border-radius:10px 0 0 10px}
-        .fin-table tr td:last-child{border-radius:0 10px 10px 0}
-
-        /* MECÁNICO VIEW */
-        .mec-banner{background:rgba(255,190,33,0.08);border:1px solid rgba(255,190,33,0.2);border-radius:14px;padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:12px}
-        .mec-icon{font-size:24px}
-        .mec-text{font-size:14px;color:var(--warn)}
+        .inbox-item{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;cursor:pointer;transition:all .2s}
+        .inbox-item:hover{border-color:rgba(255,77,77,0.3);background:rgba(255,77,77,0.04)}
+        .inbox-item.selected{border-color:var(--accent);background:rgba(255,77,77,0.06)}
+        .inbox-from{font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px}
+        .inbox-meta{font-size:11px;color:var(--muted);margin-top:2px}
+        .inbox-rol-chip{display:inline-block;background:rgba(124,131,255,0.15);color:#7c83ff;border:1px solid rgba(124,131,255,0.2);border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.5px;padding:2px 8px;text-transform:uppercase;margin-top:6px}
+        .email-view{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:14px}
+        .email-header{border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:16px}
+        .email-field{font-size:12px;color:var(--muted);margin-bottom:6px}
+        .email-field strong{color:var(--text)}
+        .admin-override{background:rgba(255,77,77,0.06);border:1px solid rgba(255,77,77,0.15);border-radius:10px;padding:14px;margin-top:14px}
+        .admin-override-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
 
         /* BOTONES ACCIÓN */
         .btn-fs{border:none;border-radius:12px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;padding:11px 18px;cursor:pointer;transition:all .25s;width:100%;margin-top:6px;display:block}
@@ -161,6 +137,16 @@
         .btn-fs-primary{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;border:none;font-family:'Montserrat',sans-serif;}
         .btn-fs-primary:hover{box-shadow:0 8px 20px rgba(204,0,0,0.4)}
         .btn-small{padding:6px 12px;font-size:12px;width:auto;display:inline-block;margin-top:0}
+        
+        /* 🔥 BOTÓN PARO DE MOTOR REFORZADO 🔥 */
+        .btn-paro{background:rgba(255,71,87,0.15) !important;border:2px solid var(--danger) !important;border-radius:12px !important;color:var(--danger) !important;font-family:'Montserrat',sans-serif !important;font-size:14px !important;font-weight:800 !important;padding:14px !important;width:100% !important;cursor:pointer !important;margin-top:8px !important;letter-spacing:.5px !important;transition:all .3s !important;animation:paroPulse 2s ease-in-out infinite !important; display:block !important;}
+        @keyframes paroPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,71,87,0.3)}50%{box-shadow:0 0 0 8px rgba(255,71,87,0)}}
+        .btn-paro:hover{background:var(--danger) !important;color:#fff !important;animation:none !important;}
+
+        .btn-desbloquear{background:rgba(0,230,118,0.15);border:2px solid var(--success);border-radius:12px;color:var(--success);font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;padding:14px;width:100%;cursor:pointer;margin-top:8px;transition:all .3s}
+        .btn-desbloquear:hover{background:var(--success);color:#000}
+        #btn-registrar-unidad{background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:12px;color:#fff;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;padding:12px 24px;cursor:pointer;transition:all .3s}
+        #btn-registrar-unidad:hover{box-shadow:0 8px 25px rgba(204,0,0,0.4);transform:translateY(-1px)}
 
         /* MODALES */
         .modal-content{background:var(--surface);border:1px solid var(--border);border-radius:20px;color:var(--text)}
@@ -174,29 +160,23 @@
         .fs-select option{background:#1a2035}
         .fs-textarea{resize:vertical;min-height:80px}
         .fs-hint{font-size:12px;color:var(--accent);margin-bottom:8px;margin-top:-10px}
-
-        .hist-row{display:grid;grid-template-columns:100px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);animation:fadeIn .3s ease}
-        .hist-row:last-child{border-bottom:none}
-        .hist-date{color:var(--muted);font-size:12px}
-        .hist-detail{font-size:13px}
-        .hist-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;font-family:'Inter',sans-serif;}
-
-        .rank-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
-        .rank-item:last-child{border-bottom:none}
-        .rank-num{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:800;color:var(--border);width:32px}
-        .rank-name{font-weight:600;font-size:14px}
-        .rank-badge{background:rgba(255,71,87,0.15);color:var(--danger);border:1px solid rgba(255,71,87,0.2);font-size:12px;font-weight:700;padding:4px 14px;border-radius:20px}
-
-        #btn-registrar-unidad{background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:12px;color:#fff;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;padding:12px 24px;cursor:pointer;transition:all .3s}
-        #btn-registrar-unidad:hover{box-shadow:0 8px 25px rgba(204,0,0,0.4);transform:translateY(-1px)}
-
         .detalles-header{display:flex;align-items:center;gap:16px;padding-bottom:20px;border-bottom:1px solid var(--border);margin-bottom:20px}
         .detalles-placa-chip{font-family:'Inter',sans-serif;font-size:18px;font-weight:800;background:rgba(255,77,77,0.08);border:1px solid rgba(255,77,77,0.2);color:var(--accent);padding:6px 16px;border-radius:10px;letter-spacing:2px}
         .detalles-stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
         .det-stat{background:var(--surface2);border-radius:12px;padding:16px;text-align:center}
         .det-stat-val{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:700}
         .det-stat-lbl{color:var(--muted);font-size:11px;margin-top:4px;font-weight:500}
-
+        .hist-row{display:grid;grid-template-columns:100px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);animation:fadeIn .3s ease}
+        .hist-row:last-child{border-bottom:none}
+        .hist-date{color:var(--muted);font-size:12px}
+        .hist-detail{font-size:13px}
+        .hist-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;font-family:'Inter',sans-serif;}
+        .rank-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+        .rank-item:last-child{border-bottom:none}
+        .rank-num{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:800;color:var(--border);width:32px}
+        .rank-name{font-weight:600;font-size:14px}
+        .rank-badge{background:rgba(255,71,87,0.15);color:var(--danger);border:1px solid rgba(255,71,87,0.2);font-size:12px;font-weight:700;padding:4px 14px;border-radius:20px}
+        .mec-banner{background:rgba(255,190,33,0.08);border:1px solid rgba(255,190,33,0.2);border-radius:14px;padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:12px}
         ::-webkit-scrollbar{width:6px}
         ::-webkit-scrollbar-track{background:var(--bg)}
         ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
@@ -210,15 +190,15 @@
     <div class="container-fluid" style="max-width:1300px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between">
         <div class="navbar-brand"><i class="fa-solid fa-truck-fast"></i> Flota<span>Smart</span></div>
         <div class="nav-user" style="display:flex; align-items:center;">
-            <div class="btn-notif" id="btn-campanita" title="Solicitudes de registro" onclick="abrirBandeja()">
+            <div class="btn-notif" id="btn-campanita" title="Solicitudes de registro" onclick="window.abrirBandeja()">
                 <i class="fa-solid fa-bell"></i>
                 <span class="notif-badge" id="notif-badge" style="display:none">0</span>
             </div>
-            <div style="text-align:right;">
+            <div style="text-align:right; margin-right:15px;">
                 <div class="nav-user-name" id="nav-nombre">Cargando...</div>
                 <div class="nav-user-rol" id="nav-rol">—</div>
             </div>
-            <button class="btn-logout" onclick="cerrarSesion()" style="margin-left: 15px; margin-top: 0;"><i class="fa-solid fa-power-off"></i></button>
+            <button class="btn-logout" onclick="window.cerrarSesion()" style="margin-top:0"><i class="fa-solid fa-power-off"></i></button>
         </div>
     </div>
 </nav>
@@ -234,24 +214,24 @@
     </div>
 
     <div class="mec-banner" id="banner-mecanico" style="display:none">
-        <span class="mec-icon"><i class="fa-solid fa-screwdriver-wrench"></i></span>
-        <span class="mec-text"><strong>Vista Mecánico:</strong> Mostrando únicamente unidades en taller. Solo tú puedes liberarlas después de registrar la intervención.</span>
+        <i class="fa-solid fa-screwdriver-wrench" style="font-size:24px; color:var(--warn)"></i>
+        <span style="font-size:14px; color:var(--warn)"><strong>Vista Mecánico:</strong> Mostrando únicamente unidades en taller. Solo tú puedes liberarlas después de registrar la intervención.</span>
     </div>
 
     <div class="tabs-bar" id="tabs-bar">
-        <button class="tab-btn active" onclick="cambiarTab('flota',this)"><i class="fa-solid fa-car"></i> Flota</button>
-        <button class="tab-btn" onclick="cambiarTab('dashboard',this)"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
-        <button class="tab-btn" onclick="cambiarTab('financiero',this)"><i class="fa-solid fa-wallet"></i> Financiero</button>
+        <button class="tab-btn active" onclick="window.cambiarTab('flota',this)"><i class="fa-solid fa-car"></i> Flota</button>
+        <button class="tab-btn" onclick="window.cambiarTab('dashboard',this)"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
+        <button class="tab-btn" onclick="window.cambiarTab('financiero',this)"><i class="fa-solid fa-wallet"></i> Financiero</button>
     </div>
 
     <div class="tab-section active" id="tab-flota">
         <div class="filters-row">
-            <button class="filter-btn active" onclick="filtrarVehiculos('todos',this)">Todos</button>
-            <button class="filter-btn" onclick="filtrarVehiculos('activo',this)">Activos</button>
-            <button class="filter-btn" onclick="filtrarVehiculos('taller',this)">En Taller</button>
-            <button class="filter-btn" onclick="filtrarVehiculos('ruta',this)">En Ruta</button>
-            <button class="filter-btn" onclick="filtrarVehiculos('bloqueado',this)">Bloqueados</button>
-            <input type="text" class="search-input" id="buscador-placa" placeholder="🔍 Buscar por placa..." oninput="buscarPorPlaca(this.value)">
+            <button class="filter-btn active" onclick="window.filtrarVehiculos('todos',this)">Todos</button>
+            <button class="filter-btn" onclick="window.filtrarVehiculos('activo',this)">Activos</button>
+            <button class="filter-btn" onclick="window.filtrarVehiculos('taller',this)">En Taller</button>
+            <button class="filter-btn" onclick="window.filtrarVehiculos('ruta',this)">En Ruta</button>
+            <button class="filter-btn" onclick="window.filtrarVehiculos('bloqueado',this)">Bloqueados</button>
+            <input type="text" class="search-input" id="buscador-placa" placeholder="🔍 Buscar por placa..." oninput="window.buscarPorPlaca(this.value)">
         </div>
         <div class="vehicle-grid" id="contenedor-vehiculos"></div>
     </div>
@@ -331,19 +311,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="modal-deudas" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold"><i class="fa-solid fa-receipt"></i> Cuentas por Pagar</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <div id="lista-deudas"></div>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="modal fade" id="modal-deudas" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title fw-bold"><i class="fa-solid fa-receipt"></i> Cuentas por Pagar</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><div id="lista-deudas"></div></div></div></div></div>
 
 <div class="modal fade" id="modal-detalles" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -354,9 +322,7 @@
       </div>
       <div class="modal-body">
         <div class="detalles-header">
-            <div>
-                <div class="detalles-placa-chip" id="detalles-placa">—</div>
-            </div>
+            <div><div class="detalles-placa-chip" id="detalles-placa">—</div></div>
             <div id="detalles-estado-badge"></div>
         </div>
         <div id="detalles-alertas"></div>
@@ -370,165 +336,30 @@
   </div>
 </div>
 
-<div class="modal fade" id="modal-vehiculo" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-plus"></i> Nueva Unidad</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-      <div class="modal-body">
-        <form id="formulario-vehiculo">
-            <div class="row g-3">
-                <div class="col-6"><label class="fs-label">Placa</label><input type="text" class="fs-input" id="input-placa" maxlength="10" required></div>
-                <div class="col-6"><label class="fs-label">Marca</label><input type="text" class="fs-input" id="input-marca" maxlength="40" required></div>
-                <div class="col-6"><label class="fs-label">Modelo</label><input type="text" class="fs-input" id="input-modelo" maxlength="40" required></div>
-                <div class="col-6"><label class="fs-label">Año</label><input type="number" class="fs-input" id="input-anio" min="1990" max="2030" required></div>
-                <div class="col-6"><label class="fs-label">Cap. Tanque (Lts)</label><input type="number" class="fs-input" id="input-tanque" placeholder="Ej. 50" min="1" max="300" required></div>
-                <div class="col-6"><label class="fs-label">Km Próx. Servicio</label><input type="number" class="fs-input" id="input-km-servicio" placeholder="Ej. 15000" min="0"></div>
-                <div class="col-12"><label class="fs-label">Vencimiento del Seguro</label><input type="date" class="fs-input" id="input-fecha-seguro"></div>
-            </div>
-            <button type="submit" class="btn-fs btn-fs-primary mt-2">Guardar Vehículo</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="modal fade" id="modal-vehiculo" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-plus"></i> Nueva Unidad</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="formulario-vehiculo"><div class="row g-3"><div class="col-6"><label class="fs-label">Placa</label><input type="text" class="fs-input" id="input-placa" maxlength="10" required></div><div class="col-6"><label class="fs-label">Marca</label><input type="text" class="fs-input" id="input-marca" maxlength="40" required></div><div class="col-6"><label class="fs-label">Modelo</label><input type="text" class="fs-input" id="input-modelo" maxlength="40" required></div><div class="col-6"><label class="fs-label">Año</label><input type="number" class="fs-input" id="input-anio" min="1990" max="2030" required></div><div class="col-6"><label class="fs-label">Cap. Tanque (Lts)</label><input type="number" class="fs-input" id="input-tanque" placeholder="Ej. 50" min="1" max="300" required></div><div class="col-6"><label class="fs-label">Km Próx. Servicio</label><input type="number" class="fs-input" id="input-km-servicio" placeholder="Ej. 15000" min="0"></div><div class="col-12"><label class="fs-label">Vencimiento del Seguro</label><input type="date" class="fs-input" id="input-fecha-seguro"></div></div><button type="submit" class="btn-fs btn-fs-primary mt-2">Guardar Vehículo</button></form></div></div></div></div>
 
-<div class="modal fade" id="modal-uso" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header" style="background:rgba(0,230,118,0.08);border-bottom-color:rgba(0,230,118,0.1)"><h5 class="modal-title"><i class="fa-solid fa-key"></i> Solicitar Salida</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-      <div class="modal-body">
-        <form id="formulario-uso">
-            <input type="hidden" id="uso-id-vehiculo">
-            <input type="hidden" id="uso-id-usuario">
-            <label class="fs-label">Propósito</label>
-            <select class="fs-select" id="uso-proposito" required>
-                <option value="Logística">Logística / Entrega</option>
-                <option value="Transporte Interno">Transporte de Personal</option>
-                <option value="Servicios Operativos">Servicios Operativos</option>
-            </select>
-            <label class="fs-label">Kilometraje de Salida</label>
-            <p class="fs-hint">Último registrado: <span id="uso-km-previo">0</span> km</p>
-            <input type="number" class="fs-input" id="uso-kilometraje" required min="0">
-            <button type="submit" class="btn-fs btn-fs-success">Confirmar Salida</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="modal fade" id="modal-uso" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header" style="background:rgba(0,230,118,0.08);border-bottom-color:rgba(0,230,118,0.1)"><h5 class="modal-title"><i class="fa-solid fa-key"></i> Solicitar Salida</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="formulario-uso"><input type="hidden" id="uso-id-vehiculo"><input type="hidden" id="uso-id-usuario"><label class="fs-label">Propósito</label><select class="fs-select" id="uso-proposito" required><option value="Logística">Logística / Entrega</option><option value="Transporte Interno">Transporte de Personal</option><option value="Servicios Operativos">Servicios Operativos</option></select><label class="fs-label">Kilometraje de Salida</label><p class="fs-hint">Último registrado: <span id="uso-km-previo">0</span> km</p><input type="number" class="fs-input" id="uso-kilometraje" required min="0"><button type="submit" class="btn-fs btn-fs-success">Confirmar Salida</button></form></div></div></div></div>
 
-<div class="modal fade" id="modal-retorno" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header" style="background:rgba(124,131,255,0.08)"><h5 class="modal-title"><i class="fa-solid fa-location-dot"></i> Registrar Retorno</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-      <div class="modal-body">
-        <form id="formulario-retorno">
-            <input type="hidden" id="retorno-id-vehiculo">
-            <label class="fs-label">Kilometraje de Llegada</label>
-            <p class="fs-hint">Se fue con: <span id="retorno-km-previo">0</span> km</p>
-            <input type="number" class="fs-input" id="retorno-km" required min="0">
-            <label class="fs-label">Combustible Restante</label>
-            <select class="fs-select" id="retorno-gas" required>
-                <option value="100">Lleno (100%)</option>
-                <option value="75">3/4 de Tanque (75%)</option>
-                <option value="50">Medio Tanque (50%)</option>
-                <option value="25">1/4 de Tanque (25%)</option>
-                <option value="10">Reserva (10%)</option>
-            </select>
-            <button type="submit" class="btn-fs btn-fs-info">Confirmar Llegada</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="modal fade" id="modal-retorno" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header" style="background:rgba(124,131,255,0.08)"><h5 class="modal-title"><i class="fa-solid fa-location-dot"></i> Registrar Retorno</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="formulario-retorno"><input type="hidden" id="retorno-id-vehiculo"><label class="fs-label">Kilometraje de Llegada</label><p class="fs-hint">Se fue con: <span id="retorno-km-previo">0</span> km</p><input type="number" class="fs-input" id="retorno-km" required min="0"><label class="fs-label">Combustible Restante</label><select class="fs-select" id="retorno-gas" required><option value="100">Lleno (100%)</option><option value="75">3/4 de Tanque (75%)</option><option value="50">Medio Tanque (50%)</option><option value="25">1/4 de Tanque (25%)</option><option value="10">Reserva (10%)</option></select><button type="submit" class="btn-fs btn-fs-info">Confirmar Llegada</button></form></div></div></div></div>
 
-<div class="modal fade" id="modal-gasolina" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-gas-pump"></i> Cargar Combustible</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-      <div class="modal-body">
-        <form id="formulario-gasolina">
-            <input type="hidden" id="gasolina-id-vehiculo">
-            <input type="hidden" id="gasolina-id-usuario">
-            <label class="fs-label">Litros Cargados</label><input type="number" class="fs-input" id="gasolina-litros" step="0.01" min="0.1" required>
-            <label class="fs-label">Costo Total ($)</label><input type="number" class="fs-input" id="gasolina-costo" step="0.01" min="0" required>
-            <label class="fs-label">Kilometraje al Cargar</label>
-            <p class="fs-hint">Último registrado: <span id="gasolina-km-previo">0</span> km</p>
-            <input type="number" class="fs-input" id="gasolina-km" required min="0">
-            <button type="submit" class="btn-fs btn-fs-dark">Guardar Ticket</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="modal fade" id="modal-gasolina" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-gas-pump"></i> Cargar Combustible</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="formulario-gasolina">
+    <input type="hidden" id="gasolina-id-vehiculo">
+    <input type="hidden" id="gasolina-id-usuario">
+    <label class="fs-label">Litros Cargados</label>
+    <p class="fs-hint" style="color:var(--warn)">Capacidad máxima de esta unidad: <strong id="gasolina-cap-tanque">50</strong> Lts</p>
+    <input type="number" class="fs-input" id="gasolina-litros" step="0.01" min="0.1" required>
+    <label class="fs-label">Costo Total ($)</label><input type="number" class="fs-input" id="gasolina-costo" step="0.01" min="0" required>
+    <label class="fs-label">Kilometraje al Cargar</label><p class="fs-hint">Último registrado: <span id="gasolina-km-previo">0</span> km</p><input type="number" class="fs-input" id="gasolina-km" required min="0">
+    <button type="submit" class="btn-fs btn-fs-dark">Guardar Ticket y Actualizar Tanque</button>
+</form></div></div></div></div>
 
-<div class="modal fade" id="modal-evento" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header" style="background:rgba(255,71,87,0.08)"><h5 class="modal-title"><i class="fa-solid fa-wrench"></i> Reportar Incidencia</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-      <div class="modal-body">
-        <form id="formulario-evento">
-            <input type="hidden" id="evento-id-vehiculo">
-            <input type="hidden" id="evento-id-usuario">
-            <label class="fs-label">Tipo de Reporte</label>
-            <select class="fs-select" id="evento-tipo" required>
-                <option value="Falla Técnica">Falla Técnica</option>
-                <option value="Mantenimiento Preventivo">Mantenimiento Preventivo</option>
-                <option value="Accidente">Accidente Vial</option>
-            </select>
-            <label class="fs-label">Causa Raíz</label>
-            <select class="fs-select" id="evento-causa" required>
-                <option value="Desgaste Natural">Desgaste Natural</option>
-                <option value="Negligencia">Negligencia del Operador</option>
-                <option value="Falla de Componente">Falla de Componente</option>
-            </select>
-            <label class="fs-label">Descripción Detallada</label>
-            <textarea class="fs-textarea" id="evento-descripcion" required maxlength="500"></textarea>
-            <label class="fs-label">Costo Estimado ($)</label>
-            <input type="number" class="fs-input" id="evento-costo" step="0.01" value="0" min="0">
-            <button type="submit" class="btn-fs btn-fs-danger">Enviar al Taller</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="modal-liberar" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header" style="background:rgba(255,190,33,0.08)"><h5 class="modal-title"><i class="fa-solid fa-check"></i> Liberar del Taller</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-      <div class="modal-body">
-        <form id="formulario-liberar">
-            <input type="hidden" id="liberar-id-vehiculo">
-            <label class="fs-label">¿Qué se reparó / revisó?</label>
-            <textarea class="fs-textarea" id="liberar-descripcion" placeholder="Describe la intervención..." required maxlength="500"></textarea>
-            <button type="submit" class="btn-fs btn-fs-warn">Confirmar y Liberar</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="modal-historial" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-book"></i> Historial del Vehículo</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-      <div class="modal-body">
-        <div id="historial-contenido"></div>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="modal fade" id="modal-evento" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header" style="background:rgba(255,71,87,0.08)"><h5 class="modal-title"><i class="fa-solid fa-wrench"></i> Reportar Incidencia</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="formulario-evento"><input type="hidden" id="evento-id-vehiculo"><input type="hidden" id="evento-id-usuario"><label class="fs-label">Tipo de Reporte</label><select class="fs-select" id="evento-tipo" required><option value="Falla Técnica">Falla Técnica</option><option value="Mantenimiento Preventivo">Mantenimiento Preventivo</option><option value="Accidente">Accidente Vial</option></select><label class="fs-label">Causa Raíz</label><select class="fs-select" id="evento-causa" required><option value="Desgaste Natural">Desgaste Natural</option><option value="Negligencia">Negligencia del Operador</option><option value="Falla de Componente">Falla de Componente</option></select><label class="fs-label">Descripción Detallada</label><textarea class="fs-textarea" id="evento-descripcion" required maxlength="500"></textarea><label class="fs-label">Costo Estimado ($)</label><input type="number" class="fs-input" id="evento-costo" step="0.01" value="0" min="0"><button type="submit" class="btn-fs btn-fs-danger">Enviar al Taller</button></form></div></div></div></div>
+<div class="modal fade" id="modal-liberar" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header" style="background:rgba(255,190,33,0.08)"><h5 class="modal-title"><i class="fa-solid fa-check"></i> Liberar del Taller</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="formulario-liberar"><input type="hidden" id="liberar-id-vehiculo"><label class="fs-label">¿Qué se reparó / revisó?</label><textarea class="fs-textarea" id="liberar-descripcion" placeholder="Describe la intervención..." required maxlength="500"></textarea><button type="submit" class="btn-fs btn-fs-warn">Confirmar y Liberar</button></form></div></div></div></div>
+<div class="modal fade" id="modal-historial" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-book"></i> Historial del Vehículo</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><div id="historial-contenido"></div></div></div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="js/principal.js?v=2026_MASTER_ESTRUCTURA"></script>
-<script>
-    function cerrarSesion() {
-        localStorage.removeItem('usuarioFlota');
-        localStorage.removeItem('tokenFlota');
-        window.location.href = 'login.html';
-    }
-</script>
+<script src="js/principal.js?v=2026_MASTER_FIN"></script>
 </body>
 </html>
