@@ -6,7 +6,7 @@
     <title>FlotaSmart | Acceso</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" type="image/png" href="img/faviconlog.png">
+    <link rel="icon" type="image/png" href="img/favicon.png">
     <style>
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         :root{--bg:#080c14;--card:#0e1421;--border:rgba(255,255,255,0.06);--accent:#ff4d4d;--accent2:#cc0000;--text:#e8edf5;--muted:#5a6a80;--danger:#ff4757;--success:#00e676}
@@ -17,9 +17,9 @@
         .orb-1{width:400px;height:400px;background:#cc0000;top:-100px;left:-100px}
         .orb-2{width:300px;height:300px;background:#ff4d4d;bottom:-80px;right:-80px;animation-delay:-4s}
         @keyframes orbFloat{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,20px) scale(1.1)}}
-        .login-wrap{width:100%;max-width:420px;padding:16px;position:relative;z-index:10;animation:slideUp .6s cubic-bezier(.16,1,.3,1) both}
+        .login-wrap{width:100%;max-width:440px;padding:16px;position:relative;z-index:10;animation:slideUp .6s cubic-bezier(.16,1,.3,1) both}
         @keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
-        .login-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:40px 40px;box-shadow:0 0 0 1px rgba(255,77,77,0.05),0 40px 80px rgba(0,0,0,0.5);position:relative;overflow:hidden;transition:all 0.3s}
+        .login-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:40px;box-shadow:0 0 0 1px rgba(255,77,77,0.05),0 40px 80px rgba(0,0,0,0.5);position:relative;overflow:hidden;transition:all 0.3s}
         .login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,77,77,0.4),transparent)}
         .logo{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px;text-align:center}
         .logo span{color:var(--accent)}
@@ -30,22 +30,41 @@
         .field-label{display:block;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
         .field-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:12px 16px;transition:all .2s;outline:none}
         .field-input:focus{border-color:rgba(255,77,77,0.4);background:rgba(255,77,77,0.04);box-shadow:0 0 0 3px rgba(255,77,77,0.08)}
+        .field-input option{background:#1a2035;color:#fff}
         .btn-login{width:100%;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:12px;color:#fff;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;letter-spacing:.5px;padding:16px;cursor:pointer;margin-top:8px;position:relative;overflow:hidden;transition:all .3s}
         .btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(204,0,0,0.4)}
         .alert-error{background:rgba(255,71,87,0.1);border:1px solid rgba(255,71,87,0.3);border-radius:10px;color:#ff6b7a;font-size:13px;padding:12px 16px;margin-top:16px;display:none;text-align:center}
         .link-swap{display:block;text-align:center;margin-top:20px;color:var(--muted);font-size:12px;text-decoration:none;cursor:pointer;transition:0.2s}
         .link-swap:hover{color:var(--text)}
         .link-swap span{color:var(--accent);font-weight:600}
+
+        /* 🔥 ESTILOS PARA LOS BOTONES VISUALES DEL ROL 🔥 */
+        .role-selector { display: flex; gap: 12px; margin-bottom: 16px; }
+        .role-option { flex: 1; cursor: pointer; }
+        .role-option input { display: none; }
+        .role-card {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            border-radius: 12px; padding: 16px 10px; text-align: center;
+            color: var(--muted); transition: all 0.2s; height: 100%;
+        }
+        .role-card i { font-size: 24px; margin-bottom: 8px; display: block; transition: all 0.2s;}
+        .role-card span { font-size: 12px; font-weight: 600; display: block;}
+        .role-option input:checked + .role-card {
+            background: rgba(255,77,77,0.1); border-color: var(--accent); color: var(--text);
+        }
+        .role-option input:checked + .role-card i { color: var(--accent); transform: scale(1.1); }
+        .role-option:hover .role-card { border-color: rgba(255,77,77,0.4); }
     </style>
 </head>
 <body>
     <div class="orb orb-1"></div><div class="orb orb-2"></div>
     <div class="login-wrap">
+        
         <div class="login-card" id="vista-login">
             <div class="logo"><i class="fa-solid fa-truck-fast"></i> Flota<span>Smart</span><span class="logo-dot"></span></div>
             <p class="tagline">Acceso de Empleados</p>
             <form id="formulario-login">
-                <div class="field-group"><label class="field-label">Correo</label><input type="email" class="field-input" id="correo" required></div>
+                <div class="field-group"><label class="field-label">Correo Institucional</label><input type="email" class="field-input" id="correo" required></div>
                 <div class="field-group"><label class="field-label">Contraseña</label><input type="password" class="field-input" id="password" required></div>
                 <button type="submit" class="btn-login" id="btn-ingresar">Ingresar al Sistema</button>
             </form>
@@ -55,28 +74,67 @@
 
         <div class="login-card" id="vista-registro" style="display:none">
             <div class="logo"><i class="fa-solid fa-user-plus"></i> Solicitud<span>Acceso</span><span class="logo-dot"></span></div>
+            <p class="tagline">Regístrate para solicitar autorización</p>
+            
             <form id="formulario-registro">
-                <div class="field-group"><label class="field-label">Nombre Completo</label><input type="text" class="field-input" id="reg-nombre" required></div>
-                <div style="display:flex;gap:10px">
-                    <div class="field-group" style="flex:1"><label class="field-label">Depto.</label><input type="text" class="field-input" id="reg-depto" placeholder="Ej. Logística" required></div>
-                    <div class="field-group" style="flex:1"><label class="field-label">Puesto Solicitado</label>
-                        <select class="field-input" id="reg-rol" required style="background:#1a2035"><option value="chofer">Chofer/Operador</option><option value="mecanico">Mecánico</option></select>
-                    </div>
+                <div class="field-group">
+                    <label class="field-label">Nombre Completo</label>
+                    <input type="text" class="field-input" id="reg-nombre" placeholder="Ej. Mario Perez" required>
                 </div>
-                <div class="field-group"><label class="field-label">Correo Institucional</label><input type="email" class="field-input" id="reg-correo" required></div>
-                <div class="field-group"><label class="field-label">Crea una contraseña</label><input type="password" class="field-input" id="reg-pass" required></div>
+
+                <div class="field-group">
+                    <label class="field-label">Departamento</label>
+                    <select class="field-input" id="reg-depto" required>
+                        <option value="" disabled selected>Selecciona tu área...</option>
+                        <option value="Logística y Envíos">Logística y Envíos</option>
+                        <option value="Mantenimiento Automotriz">Mantenimiento Automotriz</option>
+                        <option value="Operaciones Especiales">Operaciones Especiales</option>
+                        <option value="Administración Base">Administración Base</option>
+                    </select>
+                </div>
+
+                <label class="field-label">Puesto Solicitado</label>
+                <div class="role-selector">
+                    <label class="role-option">
+                        <input type="radio" name="reg-rol" value="chofer" checked>
+                        <div class="role-card">
+                            <i class="fa-solid fa-truck-steering"></i>
+                            <span>Chofer / Operador</span>
+                        </div>
+                    </label>
+                    <label class="role-option">
+                        <input type="radio" name="reg-rol" value="mecanico">
+                        <div class="role-card">
+                            <i class="fa-solid fa-screwdriver-wrench"></i>
+                            <span>Mecánico Base</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Correo Institucional</label>
+                    <input type="email" class="field-input" id="reg-correo" placeholder="ejemplo@empresa.com" required>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Crea una contraseña</label>
+                    <input type="password" class="field-input" id="reg-pass" required>
+                </div>
+
                 <button type="submit" class="btn-login" id="btn-registrar">Enviar Solicitud al Administrador</button>
             </form>
+
             <div id="mensaje-registro" class="alert-error"></div>
             <a class="link-swap" onclick="cambiarVista('login')"><i class="fa-solid fa-arrow-left"></i> Volver al Login</a>
         </div>
     </div>
+
     <script>
         function cambiarVista(vista) {
             document.getElementById('vista-login').style.display = vista === 'login' ? 'block' : 'none';
             document.getElementById('vista-registro').style.display = vista === 'registro' ? 'block' : 'none';
         }
 
+        // LOGIN
         document.getElementById('formulario-login').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-ingresar');
@@ -89,11 +147,10 @@
                 });
                 const data = await res.json();
                 
-                // 🔥 AQUI ESTÁ LA MAGIA QUE FALTABA: GUARDAR EL TOKEN 🔥
                 if (res.ok && data.usuario && data.token) {
                     data.usuario._ts = Date.now();
                     localStorage.setItem('usuarioFlota', JSON.stringify(data.usuario));
-                    localStorage.setItem('tokenFlota', data.token); // <--- GUARDAMOS LA LLAVE
+                    localStorage.setItem('tokenFlota', data.token); 
                     window.location.href = 'index.html';
                 } else { 
                     divError.innerHTML = '✕ ' + (data.error || 'Error desconocido'); 
@@ -106,28 +163,42 @@
             btn.textContent = 'Ingresar al Sistema'; btn.disabled = false;
         });
 
+        // REGISTRO
         document.getElementById('formulario-registro').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-registrar');
             const divError = document.getElementById('mensaje-registro');
             btn.textContent = 'Enviando...'; btn.disabled = true; divError.style.display = 'none';
+            
+            // Leemos el radio button visual que el usuario eligió
+            const rolSeleccionado = document.querySelector('input[name="reg-rol"]:checked').value;
+
             try {
-                const res = await fetch('https://flotasmart-backend.onrender.com/api/usuarios/registro', {
+                // 🔥 AQUÍ CORREGIMOS LA RUTA MALA POR LA NUEVA
+                const res = await fetch('https://flotasmart-backend.onrender.com/api/registro/nuevo', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         nombre: document.getElementById('reg-nombre').value,
                         departamento: document.getElementById('reg-depto').value,
                         correo: document.getElementById('reg-correo').value,
                         contrasena: document.getElementById('reg-pass').value,
-                        rol: document.getElementById('reg-rol').value
+                        rol: rolSeleccionado
                     })
                 });
+                
+                const data = await res.json();
+
                 if (res.ok) {
-                    divError.innerHTML = '<i class="fa-solid fa-check"></i> Solicitud enviada. Espera aprobación.';
+                    divError.innerHTML = '<i class="fa-solid fa-check"></i> Solicitud enviada con éxito. Espera a que el administrador te apruebe.';
                     divError.style.color = '#00e676'; divError.style.background = 'rgba(0,230,118,0.1)'; divError.style.borderColor = 'rgba(0,230,118,0.3)'; divError.style.display = 'block';
                     document.getElementById('formulario-registro').reset();
-                } else { divError.innerHTML = '✕ Error al enviar.'; divError.style.display = 'block'; }
-            } catch (err) { divError.innerHTML = '✕ Sin conexión.'; divError.style.display = 'block'; }
+                } else { 
+                    divError.innerHTML = '✕ ' + (data.error || 'Error al enviar.'); 
+                    divError.style.color = '#ff6b7a'; divError.style.background = 'rgba(255,71,87,0.1)'; divError.style.borderColor = 'rgba(255,71,87,0.3)'; divError.style.display = 'block'; 
+                }
+            } catch (err) { 
+                divError.innerHTML = '✕ Sin conexión.'; divError.style.display = 'block'; 
+            }
             btn.textContent = 'Enviar Solicitud al Administrador'; btn.disabled = false;
         });
     </script>
