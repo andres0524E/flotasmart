@@ -6,7 +6,6 @@
     <title>FlotaSmart | Acceso</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" type="image/png" href="img/favicon.png">
     <style>
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         :root{--bg:#080c14;--card:#0e1421;--border:rgba(255,255,255,0.06);--accent:#ff4d4d;--accent2:#cc0000;--text:#e8edf5;--muted:#5a6a80;--danger:#ff4757;--success:#00e676}
@@ -19,91 +18,116 @@
         @keyframes orbFloat{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,20px) scale(1.1)}}
         .login-wrap{width:100%;max-width:420px;padding:16px;position:relative;z-index:10;animation:slideUp .6s cubic-bezier(.16,1,.3,1) both}
         @keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
-        .login-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:48px 40px;box-shadow:0 0 0 1px rgba(255,77,77,0.05),0 40px 80px rgba(0,0,0,0.5);position:relative;overflow:hidden}
+        .login-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:40px 40px;box-shadow:0 0 0 1px rgba(255,77,77,0.05),0 40px 80px rgba(0,0,0,0.5);position:relative;overflow:hidden;transition:all 0.3s}
         .login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,77,77,0.4),transparent)}
-        .logo{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}
+        .logo{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px;text-align:center}
         .logo span{color:var(--accent)}
         .logo-dot{display:inline-block;width:8px;height:8px;background:var(--accent);border-radius:50%;margin-left:2px;animation:pulse 2s ease-in-out infinite;vertical-align:middle;margin-bottom:3px}
         @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,77,77,0.4)}50%{box-shadow:0 0 0 8px rgba(255,77,77,0)}}
-        .tagline{color:var(--muted);font-size:13px;letter-spacing:.5px;margin-bottom:40px}
-        .field-group{margin-bottom:20px}
+        .tagline{color:var(--muted);font-size:13px;letter-spacing:.5px;margin-bottom:30px;text-align:center}
+        .field-group{margin-bottom:16px}
         .field-label{display:block;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-        .field-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Inter',sans-serif;font-size:15px;padding:14px 18px;transition:all .2s;outline:none}
-        .field-input::placeholder{color:var(--muted)}
+        .field-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:12px 16px;transition:all .2s;outline:none}
         .field-input:focus{border-color:rgba(255,77,77,0.4);background:rgba(255,77,77,0.04);box-shadow:0 0 0 3px rgba(255,77,77,0.08)}
         .btn-login{width:100%;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:12px;color:#fff;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;letter-spacing:.5px;padding:16px;cursor:pointer;margin-top:8px;position:relative;overflow:hidden;transition:all .3s}
         .btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(204,0,0,0.4)}
-        .btn-login:active{transform:translateY(0)}
-        .alert-error{background:rgba(255,71,87,0.1);border:1px solid rgba(255,71,87,0.3);border-radius:10px;color:#ff6b7a;font-size:13px;padding:12px 16px;margin-top:16px;display:none;animation:shake .4s ease}
-        @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+        .alert-error{background:rgba(255,71,87,0.1);border:1px solid rgba(255,71,87,0.3);border-radius:10px;color:#ff6b7a;font-size:13px;padding:12px 16px;margin-top:16px;display:none;text-align:center}
+        .link-swap{display:block;text-align:center;margin-top:20px;color:var(--muted);font-size:12px;text-decoration:none;cursor:pointer;transition:0.2s}
+        .link-swap:hover{color:var(--text)}
+        .link-swap span{color:var(--accent);font-weight:600}
     </style>
 </head>
 <body>
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
+    <div class="orb orb-1"></div><div class="orb orb-2"></div>
     <div class="login-wrap">
-        <div class="login-card">
+        <div class="login-card" id="vista-login">
             <div class="logo"><i class="fa-solid fa-truck-fast"></i> Flota<span>Smart</span><span class="logo-dot"></span></div>
-            <p class="tagline">Sistema de gestión inteligente de flotas</p>
+            <p class="tagline">Acceso de Empleados</p>
             <form id="formulario-login">
-                <div class="field-group">
-                    <label class="field-label" for="correo">Correo Electrónico</label>
-                    <input type="email" class="field-input" id="correo" placeholder="operador@empresa.mx" required autocomplete="email">
-                </div>
-                <div class="field-group">
-                    <label class="field-label" for="password">Contraseña</label>
-                    <input type="password" class="field-input" id="password" placeholder="••••••••" required autocomplete="current-password">
-                </div>
+                <div class="field-group"><label class="field-label">Correo</label><input type="email" class="field-input" id="correo" required></div>
+                <div class="field-group"><label class="field-label">Contraseña</label><input type="password" class="field-input" id="password" required></div>
                 <button type="submit" class="btn-login" id="btn-ingresar">Ingresar al Sistema</button>
             </form>
             <div id="mensaje-error" class="alert-error"></div>
-            <p style="text-align:center;margin-top:20px;font-size:12px;color:var(--muted)">¿Eres nuevo? <a href="registro.html" style="color:var(--accent);font-weight:600;text-decoration:none">Solicitar acceso</a></p>
+            <a class="link-swap" onclick="cambiarVista('registro')">¿Eres empleado nuevo? <span>Solicita tu cuenta aquí</span></a>
+        </div>
+
+        <div class="login-card" id="vista-registro" style="display:none">
+            <div class="logo"><i class="fa-solid fa-user-plus"></i> Solicitud<span>Acceso</span><span class="logo-dot"></span></div>
+            <form id="formulario-registro">
+                <div class="field-group"><label class="field-label">Nombre Completo</label><input type="text" class="field-input" id="reg-nombre" required></div>
+                <div style="display:flex;gap:10px">
+                    <div class="field-group" style="flex:1"><label class="field-label">Depto.</label><input type="text" class="field-input" id="reg-depto" placeholder="Ej. Logística" required></div>
+                    <div class="field-group" style="flex:1"><label class="field-label">Puesto Solicitado</label>
+                        <select class="field-input" id="reg-rol" required style="background:#1a2035"><option value="chofer">Chofer/Operador</option><option value="mecanico">Mecánico</option></select>
+                    </div>
+                </div>
+                <div class="field-group"><label class="field-label">Correo Institucional</label><input type="email" class="field-input" id="reg-correo" required></div>
+                <div class="field-group"><label class="field-label">Crea una contraseña</label><input type="password" class="field-input" id="reg-pass" required></div>
+                <button type="submit" class="btn-login" id="btn-registrar">Enviar Solicitud al Administrador</button>
+            </form>
+            <div id="mensaje-registro" class="alert-error"></div>
+            <a class="link-swap" onclick="cambiarVista('login')"><i class="fa-solid fa-arrow-left"></i> Volver al Login</a>
         </div>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const formulario = document.getElementById('formulario-login');
-            const btnIngresar = document.getElementById('btn-ingresar');
-            formulario.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const correo = document.getElementById('correo').value.trim();
-                const password = document.getElementById('password').value;
-                const divError = document.getElementById('mensaje-error');
-                divError.style.display = 'none';
-                if (!correo.includes('@') || correo.length > 100 || password.length < 4) {
-                    divError.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Credenciales inválidas.';
-                    divError.style.display = 'block'; return;
+        function cambiarVista(vista) {
+            document.getElementById('vista-login').style.display = vista === 'login' ? 'block' : 'none';
+            document.getElementById('vista-registro').style.display = vista === 'registro' ? 'block' : 'none';
+        }
+
+        document.getElementById('formulario-login').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-ingresar');
+            const divError = document.getElementById('mensaje-error');
+            btn.textContent = 'Verificando...'; btn.disabled = true; divError.style.display = 'none';
+            try {
+                const res = await fetch('https://flotasmart-backend.onrender.com/api/login', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo: document.getElementById('correo').value, contrasena: document.getElementById('password').value })
+                });
+                const data = await res.json();
+                
+                // 🔥 AQUI ESTÁ LA MAGIA QUE FALTABA: GUARDAR EL TOKEN 🔥
+                if (res.ok && data.usuario && data.token) {
+                    data.usuario._ts = Date.now();
+                    localStorage.setItem('usuarioFlota', JSON.stringify(data.usuario));
+                    localStorage.setItem('tokenFlota', data.token); // <--- GUARDAMOS LA LLAVE
+                    window.location.href = 'index.html';
+                } else { 
+                    divError.innerHTML = '✕ ' + (data.error || 'Error desconocido'); 
+                    divError.style.display = 'block'; 
                 }
-                btnIngresar.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verificando...';
-                btnIngresar.disabled = true;
-                try {
-                    const res = await fetch('https://flotasmart-backend.onrender.com/api/login', {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ correo, contrasena: password })
-                    });
-                    const data = await res.json();
-                    if (res.ok && data.usuario) {
-                        const sesionSegura = {
-                            id_usuario: data.usuario.id_usuario, nombre: data.usuario.nombre,
-                            correo: data.usuario.correo, rol: data.usuario.rol, _ts: Date.now()
-                        };
-                        localStorage.setItem('usuarioFlota', JSON.stringify(sesionSegura));
-                        btnIngresar.innerHTML = '<i class="fa-solid fa-check"></i> Acceso concedido';
-                        btnIngresar.style.background = 'linear-gradient(135deg,#00b09b,#00e676)';
-                        setTimeout(() => window.location.href = 'index.html', 600);
-                    } else {
-                        divError.innerHTML = '<i class="fa-solid fa-xmark"></i> ' + (data.error || 'Credenciales incorrectas');
-                        divError.style.display = 'block';
-                        btnIngresar.textContent = 'Ingresar al Sistema';
-                        btnIngresar.disabled = false;
-                    }
-                } catch (err) {
-                    divError.innerHTML = '<i class="fa-solid fa-wifi"></i> Sin conexión al servidor.';
-                    divError.style.display = 'block';
-                    btnIngresar.textContent = 'Ingresar al Sistema';
-                    btnIngresar.disabled = false;
-                }
-            });
+            } catch (err) { 
+                divError.innerHTML = '✕ Sin conexión al servidor.'; 
+                divError.style.display = 'block'; 
+            }
+            btn.textContent = 'Ingresar al Sistema'; btn.disabled = false;
+        });
+
+        document.getElementById('formulario-registro').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-registrar');
+            const divError = document.getElementById('mensaje-registro');
+            btn.textContent = 'Enviando...'; btn.disabled = true; divError.style.display = 'none';
+            try {
+                const res = await fetch('https://flotasmart-backend.onrender.com/api/usuarios/registro', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nombre: document.getElementById('reg-nombre').value,
+                        departamento: document.getElementById('reg-depto').value,
+                        correo: document.getElementById('reg-correo').value,
+                        contrasena: document.getElementById('reg-pass').value,
+                        rol: document.getElementById('reg-rol').value
+                    })
+                });
+                if (res.ok) {
+                    divError.innerHTML = '<i class="fa-solid fa-check"></i> Solicitud enviada. Espera aprobación.';
+                    divError.style.color = '#00e676'; divError.style.background = 'rgba(0,230,118,0.1)'; divError.style.borderColor = 'rgba(0,230,118,0.3)'; divError.style.display = 'block';
+                    document.getElementById('formulario-registro').reset();
+                } else { divError.innerHTML = '✕ Error al enviar.'; divError.style.display = 'block'; }
+            } catch (err) { divError.innerHTML = '✕ Sin conexión.'; divError.style.display = 'block'; }
+            btn.textContent = 'Enviar Solicitud al Administrador'; btn.disabled = false;
         });
     </script>
 </body>
