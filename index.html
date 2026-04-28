@@ -28,7 +28,7 @@
         .nav-user-rol{font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:1px;font-weight:600}
 
         /* CAMPANA NOTIFICACIONES */
-        .btn-notif{position:relative;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;color:var(--text);width:38px;height:38px;display:none;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:16px}
+        .btn-notif{position:relative;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;color:var(--text);width:38px;height:38px;display:none;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:16px; margin-right: 15px;}
         .btn-notif:hover{background:rgba(255,77,77,0.1);border-color:rgba(255,77,77,0.3)}
         .notif-badge{position:absolute;top:-5px;right:-5px;background:var(--accent);color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px;animation:pulseBadge 2s ease-in-out infinite}
         @keyframes pulseBadge{0%,100%{box-shadow:0 0 0 0 rgba(255,77,77,0.5)}50%{box-shadow:0 0 0 6px rgba(255,77,77,0)}}
@@ -42,14 +42,14 @@
         .inbox-rol-chip{display:inline-block;background:rgba(124,131,255,0.15);color:#7c83ff;border:1px solid rgba(124,131,255,0.2);border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.5px;padding:2px 8px;text-transform:uppercase;margin-top:6px}
         .email-view{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:14px}
         .email-header{border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:16px}
-        .email-field{font-size:12px;color:var(--muted);margin-bottom:6px}
+        .email-field{font-size:13px;color:var(--muted);margin-bottom:6px}
         .email-field strong{color:var(--text)}
         .email-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
         .admin-override{background:rgba(255,77,77,0.06);border:1px solid rgba(255,77,77,0.15);border-radius:10px;padding:14px;margin-top:14px}
         .admin-override-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
         .override-check{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;margin-bottom:12px}
         .override-check input{accent-color:var(--accent);width:15px;height:15px}
-        .btn-logout{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;padding:4px 12px;cursor:pointer;transition:all .2s;margin-top:4px;font-family:'Inter',sans-serif}
+        .btn-logout{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;padding:4px 12px;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif; margin-top:4px;}
         .btn-logout:hover{border-color:var(--danger);color:var(--danger)}
 
         .main-wrap{max-width:1300px;margin:0 auto;padding:32px 20px;position:relative;z-index:1}
@@ -159,13 +159,11 @@
         .btn-fs-warn:hover{background:var(--warn);color:#000}
         .btn-fs-info{background:rgba(124,131,255,0.12);color:var(--info);border:1px solid rgba(124,131,255,0.2)}
         .btn-fs-info:hover{background:var(--info);color:#fff}
-        .btn-fs-blocked{background:rgba(255,107,53,0.12);color:var(--blocked);border:1px solid rgba(255,107,53,0.2)}
-        .btn-fs-blocked:hover{background:var(--blocked);color:#fff}
         .btn-fs-primary{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;border:none;font-family:'Montserrat',sans-serif;}
         .btn-fs-primary:hover{box-shadow:0 8px 20px rgba(204,0,0,0.4)}
         .btn-small{padding:6px 12px;font-size:12px;width:auto;display:inline-block;margin-top:0}
 
-        /* MODALES DARK */
+        /* MODALES */
         .modal-content{background:var(--surface);border:1px solid var(--border);border-radius:20px;color:var(--text)}
         .modal-header{background:var(--surface2);border-bottom:1px solid var(--border);border-radius:20px 20px 0 0;padding:20px 24px}
         .modal-title{font-family:'Montserrat',sans-serif;font-weight:700;font-size:16px}
@@ -178,7 +176,6 @@
         .fs-textarea{resize:vertical;min-height:80px}
         .fs-hint{font-size:12px;color:var(--accent);margin-bottom:8px;margin-top:-10px}
 
-        /* HISTORIAL Y RANKING */
         .hist-row{display:grid;grid-template-columns:100px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);animation:fadeIn .3s ease}
         .hist-row:last-child{border-bottom:none}
         .hist-date{color:var(--muted);font-size:12px}
@@ -191,18 +188,15 @@
         .rank-name{font-weight:600;font-size:14px}
         .rank-badge{background:rgba(255,71,87,0.15);color:var(--danger);border:1px solid rgba(255,71,87,0.2);font-size:12px;font-weight:700;padding:4px 14px;border-radius:20px}
 
-        /* BOTÓN REGISTRAR UNIDAD */
         #btn-registrar-unidad{background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:12px;color:#fff;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;padding:12px 24px;cursor:pointer;transition:all .3s}
         #btn-registrar-unidad:hover{box-shadow:0 8px 25px rgba(204,0,0,0.4);transform:translateY(-1px)}
 
-        /* PARO MOTOR */
         .btn-paro{background:rgba(255,71,87,0.15);border:2px solid var(--danger);border-radius:12px;color:var(--danger);font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;padding:14px;width:100%;cursor:pointer;margin-top:8px;letter-spacing:.5px;transition:all .3s;animation:paroPulse 2s ease-in-out infinite}
         @keyframes paroPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,71,87,0.3)}50%{box-shadow:0 0 0 8px rgba(255,71,87,0)}}
         .btn-paro:hover{background:var(--danger);color:#fff;animation:none}
         .btn-desbloquear{background:rgba(0,230,118,0.15);border:2px solid var(--success);border-radius:12px;color:var(--success);font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;padding:14px;width:100%;cursor:pointer;margin-top:8px;transition:all .3s}
         .btn-desbloquear:hover{background:var(--success);color:#000}
 
-        /* DETALLES DE MODAL */
         .detalles-header{display:flex;align-items:center;gap:16px;padding-bottom:20px;border-bottom:1px solid var(--border);margin-bottom:20px}
         .detalles-placa-chip{font-family:'Inter',sans-serif;font-size:18px;font-weight:800;background:rgba(255,77,77,0.08);border:1px solid rgba(255,77,77,0.2);color:var(--accent);padding:6px 16px;border-radius:10px;letter-spacing:2px}
         .detalles-stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
@@ -222,18 +216,16 @@
 <nav class="navbar-fs">
     <div class="container-fluid" style="max-width:1300px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between">
         <div class="navbar-brand"><i class="fa-solid fa-truck-fast"></i> Flota<span>Smart</span></div>
-        <div class="nav-user">
-            <div style="display:flex;align-items:center;gap:12px">
-                <button class="btn-notif" id="btn-campanita" title="Solicitudes de registro" onclick="abrirBandeja()">
-                    <i class="fa-solid fa-bell"></i>
-                    <span class="notif-badge" id="notif-badge" style="display:none">0</span>
-                </button>
-                <div>
-                    <div class="nav-user-name" id="nav-nombre">Cargando...</div>
-                    <div class="nav-user-rol" id="nav-rol">—</div>
-                </div>
+        <div style="display:flex; align-items:center;">
+            <div class="btn-notif" id="btn-campanita" title="Solicitudes de registro" onclick="abrirBandeja()">
+                <i class="fa-solid fa-bell"></i>
+                <span class="notif-badge" id="notif-badge" style="display:none">0</span>
             </div>
-            <button class="btn-logout" onclick="cerrarSesion()"><i class="fa-solid fa-power-off"></i> Cerrar sesión</button>
+            <div class="nav-user">
+                <div class="nav-user-name" id="nav-nombre">Cargando...</div>
+                <div class="nav-user-rol" id="nav-rol">—</div>
+                <button class="btn-logout" onclick="cerrarSesion()"><i class="fa-solid fa-power-off"></i> Cerrar sesión</button>
+            </div>
         </div>
     </div>
 </nav>
@@ -254,18 +246,18 @@
     </div>
 
     <div class="tabs-bar" id="tabs-bar">
-        <button class="tab-btn active" data-tab="flota" onclick="cambiarTab('flota',this)"><i class="fa-solid fa-car"></i> Flota</button>
-        <button class="tab-btn" data-tab="dashboard" onclick="cambiarTab('dashboard',this)"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
-        <button class="tab-btn" data-tab="financiero" onclick="cambiarTab('financiero',this)"><i class="fa-solid fa-wallet"></i> Financiero</button>
+        <button class="tab-btn active" onclick="cambiarTab('flota',this)"><i class="fa-solid fa-car"></i> Flota</button>
+        <button class="tab-btn" onclick="cambiarTab('dashboard',this)"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
+        <button class="tab-btn" onclick="cambiarTab('financiero',this)"><i class="fa-solid fa-wallet"></i> Financiero</button>
     </div>
 
     <div class="tab-section active" id="tab-flota">
-        <div class="filters-row" id="filtros-row">
+        <div class="filters-row">
             <button class="filter-btn active" onclick="filtrarVehiculos('todos',this)">Todos</button>
-            <button class="filter-btn" onclick="filtrarVehiculos('activo',this)"><i class="fa-solid fa-check"></i> Activos</button>
-            <button class="filter-btn" onclick="filtrarVehiculos('taller',this)"><i class="fa-solid fa-wrench"></i> En Taller</button>
-            <button class="filter-btn" onclick="filtrarVehiculos('ruta',this)"><i class="fa-solid fa-road"></i> En Ruta</button>
-            <button class="filter-btn" onclick="filtrarVehiculos('bloqueado',this)"><i class="fa-solid fa-lock"></i> Bloqueados</button>
+            <button class="filter-btn" onclick="filtrarVehiculos('activo',this)">Activos</button>
+            <button class="filter-btn" onclick="filtrarVehiculos('taller',this)">En Taller</button>
+            <button class="filter-btn" onclick="filtrarVehiculos('ruta',this)">En Ruta</button>
+            <button class="filter-btn" onclick="filtrarVehiculos('bloqueado',this)">Bloqueados</button>
             <input type="text" class="search-input" id="buscador-placa" placeholder="🔍 Buscar por placa..." oninput="buscarPorPlaca(this.value)">
         </div>
         <div class="vehicle-grid" id="contenedor-vehiculos"></div>
@@ -314,6 +306,36 @@
         </div>
     </div>
 
+</div>
+
+<div class="modal fade" id="modal-bandeja" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header" style="background:rgba(255,77,77,0.06);border-bottom-color:rgba(255,77,77,0.1)">
+        <h5 class="modal-title"><i class="fa-solid fa-inbox" style="color:var(--accent);margin-right:8px"></i> Bandeja de Solicitudes</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="padding:20px">
+        <div style="display:grid;grid-template-columns:220px 1fr;gap:16px;min-height:340px">
+          <div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Pendientes</div>
+            <div id="inbox-lista">
+              <div style="color:var(--muted);font-size:13px;text-align:center;padding:30px 0">
+                <i class="fa-solid fa-inbox" style="font-size:28px;display:block;margin-bottom:8px;opacity:.4"></i>
+                Sin solicitudes
+              </div>
+            </div>
+          </div>
+          <div id="inbox-detalle">
+            <div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;color:var(--muted);gap:12px">
+              <i class="fa-solid fa-arrow-left" style="font-size:24px;opacity:.3"></i>
+              <span style="font-size:13px">Selecciona una solicitud</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="modal fade" id="modal-deudas" tabindex="-1" aria-hidden="true">
@@ -384,8 +406,7 @@
       <div class="modal-body">
         <form id="formulario-uso">
             <input type="hidden" id="uso-id-vehiculo">
-            <label class="fs-label">ID Operador</label><input type="number" class="fs-input" id="uso-id-usuario" readonly>
-            <label class="fs-label">Gasolina Actual</label><input type="text" class="fs-input" id="uso-gasolina-lectura" readonly>
+            <input type="hidden" id="uso-id-usuario">
             <label class="fs-label">Propósito</label>
             <select class="fs-select" id="uso-proposito" required>
                 <option value="Logística">Logística / Entrega</option>
@@ -434,6 +455,7 @@
       <div class="modal-body">
         <form id="formulario-gasolina">
             <input type="hidden" id="gasolina-id-vehiculo">
+            <input type="hidden" id="gasolina-id-usuario">
             <label class="fs-label">Litros Cargados</label><input type="number" class="fs-input" id="gasolina-litros" step="0.01" min="0.1" required>
             <label class="fs-label">Costo Total ($)</label><input type="number" class="fs-input" id="gasolina-costo" step="0.01" min="0" required>
             <label class="fs-label">Kilometraje al Cargar</label>
@@ -453,6 +475,7 @@
       <div class="modal-body">
         <form id="formulario-evento">
             <input type="hidden" id="evento-id-vehiculo">
+            <input type="hidden" id="evento-id-usuario">
             <label class="fs-label">Tipo de Reporte</label>
             <select class="fs-select" id="evento-tipo" required>
                 <option value="Falla Técnica">Falla Técnica</option>
@@ -503,43 +526,10 @@
   </div>
 </div>
 
-<!-- MODAL BANDEJA DE NOTIFICACIONES -->
-<div class="modal fade" id="modal-bandeja" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header" style="background:rgba(255,77,77,0.06);border-bottom-color:rgba(255,77,77,0.1)">
-        <h5 class="modal-title"><i class="fa-solid fa-inbox" style="color:var(--accent);margin-right:8px"></i> Bandeja de Solicitudes de Registro</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body" style="padding:20px">
-        <div style="display:grid;grid-template-columns:220px 1fr;gap:16px;min-height:340px">
-          <!-- Lista de solicitudes -->
-          <div>
-            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Pendientes</div>
-            <div id="inbox-lista">
-              <div style="color:var(--muted);font-size:13px;text-align:center;padding:30px 0">
-                <i class="fa-solid fa-inbox" style="font-size:28px;display:block;margin-bottom:8px;opacity:.4"></i>
-                Sin solicitudes
-              </div>
-            </div>
-          </div>
-          <!-- Vista de la solicitud seleccionada -->
-          <div id="inbox-detalle">
-            <div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;color:var(--muted);gap:12px">
-              <i class="fa-solid fa-arrow-left" style="font-size:24px;opacity:.3"></i>
-              <span style="font-size:13px">Selecciona una solicitud</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="js/principal.js?v=2026_USUARIOS"></script>
+<script src="js/principal.js?v=2026_MASTER_FINAL"></script>
 <script>
     function cerrarSesion() {
         localStorage.removeItem('usuarioFlota');
