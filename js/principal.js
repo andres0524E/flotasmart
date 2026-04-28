@@ -9,27 +9,22 @@ let solicitudesGlobal = [];
 let solicitudSeleccionada = null;
 
 function verificarSesion() {
-    const raw = localStorage.getItem('usuarioFlota');
-    if (!raw) return null;
+    const raw   = localStorage.getItem('usuarioFlota');
+    const token = localStorage.getItem('tokenFlota');
+    if (!raw || !token) { _limpiarSesion(); return null; }
     try {
         const usr = JSON.parse(raw);
         const OCHO_HORAS = 8 * 60 * 60 * 1000;
-        if (!usr._ts || (Date.now() - usr._ts) > OCHO_HORAS) {
-            localStorage.removeItem('usuarioFlota');
-            window.location.href = 'login.html';
-            return null;
-        }
-        if (!usr.id_usuario || !usr.rol) {
-            localStorage.removeItem('usuarioFlota');
-            window.location.href = 'login.html';
-            return null;
-        }
+        if (!usr._ts || (Date.now() - usr._ts) > OCHO_HORAS) { _limpiarSesion(); return null; }
+        if (!usr.id_usuario || !usr.rol) { _limpiarSesion(); return null; }
         return usr;
-    } catch (e) {
-        localStorage.removeItem('usuarioFlota');
-        window.location.href = 'login.html';
-        return null;
-    }
+    } catch (e) { _limpiarSesion(); return null; }
+}
+
+function _limpiarSesion() {
+    localStorage.removeItem('usuarioFlota');
+    localStorage.removeItem('tokenFlota');
+    window.location.href = 'login.html';
 }
 
 function sanitizar(str) {
@@ -39,7 +34,14 @@ function sanitizar(str) {
 
 async function apiFetch(url, opts = {}) {
     try {
+        const token = localStorage.getItem('tokenFlota');
+        opts.headers = {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': 'Bearer ' + token } : {}),
+            ...opts.headers
+        };
         const res = await fetch(API_URL + url, opts);
+        if (res.status === 401 || res.status === 403) { _limpiarSesion(); return null; }
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return await res.json();
     } catch (e) {
@@ -1000,15 +1002,13 @@ window.procesarSolicitud = async function(accion, id) {
         const { isConfirmed } = await Swal.fire({
             title: '¿Rechazar esta solicitud?',
             text: 'El usuario no podrá ingresar al sistema.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, rechazar',
-            cancelButtonText: 'Cancelar',
+            icon: 'warning', showCancelButton: true,
+            confirmButtonText: 'Sí, rechazar', cancelButtonText: 'Cancelar',
             background: '#0e1421', color: '#e8edf5'
         });
         if (!isConfirmed) return;
 
-        const r = await apiFetch(`/api/registro/${id}/rechazar`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({}) });
+        const r = await apiFetch(`/api/registro/${id}/rechazar`, { method: 'PUT', body: JSON.stringify({}) });
         if (r !== null) {
             Swal.fire({ icon: 'success', title: 'Solicitud rechazada', timer: 1500, background: '#0e1421', color: '#e8edf5' });
             solicitudesGlobal = solicitudesGlobal.filter(s => s.id_solicitud !== id);
@@ -1018,50 +1018,25 @@ window.procesarSolicitud = async function(accion, id) {
         return;
     }
 
-    // Aprobar
+    // Aprobar — el JWT ya nos identifica como admin, ya no hace falta pedir contraseña
     const darAdmin = document.getElementById('check-dar-admin')?.checked;
-    const passAdmin = document.getElementById('admin-pass-confirm')?.value || '';
 
-    if (darAdmin && !passAdmin) {
-        Swal.fire({ icon: 'warning', title: 'Falta la contraseña', text: 'Para asignar rol de administrador debes confirmar tu contraseña.', background: '#0e1421', color: '#e8edf5' });
-        return;
-    }
-
-    const body = {
-        id_admin: usuario.id_usuario,
-        contrasena_admin: darAdmin ? passAdmin : 'SKIP_ADMIN_ROLE',
-        rol_final: darAdmin ? 'admin' : null
-    };
-
-    // Si no quiere dar admin, no necesita contraseña — mandar password vacío no aplica
-    // Pero el backend siempre verifica — así que si NO es admin override, mandamos contraseña dummy
-    // Para evitar esto, ajustemos: si no dar admin, solicitar contraseña admin para aprobar
-    if (!darAdmin) {
-        const { value: pw } = await Swal.fire({
-            title: 'Confirma tu identidad',
-            text: 'Ingresa tu contraseña de administrador para aprobar.',
-            input: 'password',
-            inputPlaceholder: 'Tu contraseña',
-            showCancelButton: true,
-            background: '#0e1421', color: '#e8edf5',
-            confirmButtonText: 'Aprobar'
-        });
-        if (!pw) return;
-        body.contrasena_admin = pw;
-    }
+    const { isConfirmed } = await Swal.fire({
+        title: darAdmin ? '¿Aprobar como Administrador?' : '¿Aprobar solicitud?',
+        text: darAdmin ? 'Este usuario tendrá acceso total al sistema.' : 'El usuario podrá acceder con su rol solicitado.',
+        icon: 'question', showCancelButton: true,
+        confirmButtonText: 'Sí, aprobar', cancelButtonText: 'Cancelar',
+        background: '#0e1421', color: '#e8edf5'
+    });
+    if (!isConfirmed) return;
 
     const r = await apiFetch(`/api/registro/${id}/aprobar`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
+        body: JSON.stringify({ rol_final: darAdmin ? 'admin' : null })
     });
-
-    if (r && r.mensaje) {
-        Swal.fire({ icon: 'success', title: '¡Usuario aprobado!', text: r.mensaje, timer: 2000, background: '#0e1421', color: '#e8edf5' });
+    if (r) {
+        Swal.fire({ icon: 'success', title: '¡Usuario aprobado!', timer: 1500, background: '#0e1421', color: '#e8edf5' });
         solicitudesGlobal = solicitudesGlobal.filter(s => s.id_solicitud !== id);
         await cargarConteoNotificaciones();
         abrirBandeja();
-    } else {
-        Swal.fire({ icon: 'error', title: 'Error al aprobar', text: r?.error || 'Verifica tu contraseña e intenta de nuevo.', background: '#0e1421', color: '#e8edf5' });
-    }
-};
+    };
