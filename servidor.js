@@ -15,19 +15,12 @@ const app = express();
 app.use(helmet());
 
 // ==========================================
-// SEGURIDAD: CORS restringido a tu frontend
-// En .env pon: FRONTEND_URL=https://tu-dominio.com
+// 🔥 SEGURIDAD CORS (Corregida y Universal)
 // ==========================================
-const origenesPermitidos = (process.env.FRONTEND_URL || 'http://localhost')
-    .split(',').map(o => o.trim());
-
 app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin && process.env.NODE_ENV !== 'production') return callback(null, true);
-        if (origenesPermitidos.includes(origin)) return callback(null, true);
-        callback(new Error('Origen no permitido por CORS'));
-    },
-    credentials: true
+    origin: '*', // Permite que tu frontend acceda sin problemas de sintaxis en la URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
@@ -46,7 +39,6 @@ const limiterLogin = rateLimit({
 
 // ==========================================
 // MIDDLEWARE: Verificar JWT
-// Uso: agregar verificarToken antes del handler
 // ==========================================
 function verificarToken(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -61,7 +53,7 @@ function verificarToken(req, res, next) {
 }
 
 // ==========================================
-// MIDDLEWARE: Solo admins (usar después de verificarToken)
+// MIDDLEWARE: Solo admins 
 // ==========================================
 function soloAdmin(req, res, next) {
     if (req.usuario?.rol !== 'admin') {
@@ -104,6 +96,11 @@ app.post('/api/login', limiterLogin, (req, res) => {
         if (resultados.length === 0) return res.status(401).json({ error: 'Credenciales incorrectas' });
 
         const usuario = resultados[0];
+
+        // Validaciones de estado de la cuenta
+        if (usuario.estado_cuenta === 'Pendiente') return res.status(401).json({ error: 'Tu cuenta está en revisión por el Administrador.' });
+        if (usuario.estado_cuenta === 'Rechazado') return res.status(401).json({ error: 'Registro rechazado.' });
+
         const coincide = await bcrypt.compare(contrasena, usuario.contrasena);
         if (!coincide) return res.status(401).json({ error: 'Credenciales incorrectas' });
 
